@@ -1,0 +1,106 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🎨 Design System */
+:root {
+  --color-primary: #c9a227;
+  --color-primary-dark: #a8841d;
+  --color-bg: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-text: #e5e5e5;
+  --color-text-light: #a1a1aa;
+  --color-border: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================= */
+/* 🌍 Global Styles */
+html, body, #root {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Roboto", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+ overflow-x: hidden;
+  width: 100%;
+}
+
+/* ============================= */
+/* 🔠 Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Playfair Display", serif;
+  letter-spacing: 0.5px;
+  color: var(--color-text);
+}
+
+/* ============================= */
+/* 🔘 Buttons (Premium Gold) */
+.btn-primary {
+  @apply px-6 py-3 rounded-full font-semibold transition-all duration-300;
+  background: linear-gradient(to right, #facc15, #eab308, #ca8a04);
+  color: black;
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+}
+
+/* ============================= */
+/* 🧾 Cards */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================= */
+/* 🏷 Section Titles */
+.section-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.section-title span {
+  background: linear-gradient(to right, #facc15, #ca8a04);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ============================= */
+/* ✨ Divider */
+.divider {
+  width: 80px;
+  height: 4px;
+  margin: 10px auto 40px;
+  border-radius: 10px;
+  background: linear-gradient(to right, #facc15, #ca8a04);
+}
+
+/* ============================= */
+/* 🔗 Links */
+a {
+  transition: all 0.3s ease;
+}
+a:hover {
+  color: var(--color-primary);
+}
+
+/* ============================= */
+/* 🪄 Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #facc15, #ca8a04);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
