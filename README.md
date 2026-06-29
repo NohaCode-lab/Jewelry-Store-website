@@ -1,16 +1,56 @@
-# React + Vite
+# 💎 Jewelry Store Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive Jewelry Store website built with React and Vite.  
+The project showcases a luxury jewelry brand with a clean UI, smooth user experience, and fully responsive design.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- 🛍️ Beautiful product showcase (rings, necklaces, earrings, bracelets)
+- 🎨 Modern and elegant UI design
+- 📱 Fully responsive (mobile, tablet, desktop)
+- ⚡ Fast performance using Vite
+- 🧩 Component-based architecture (React)
+- 🖼️ High-quality product images
+- 🧭 Smooth navigation and structured sections:
+  - Hero Section
+  - About Section
+  - Products Section
+  - Testimonials
+  - Contact Section
+  - Footer
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React 18+
+- Vite
+- JavaScript (ES6+)
+- HTML5
+- CSS3 / Tailwind CSS (if used)
+- Git & GitHub
+
+---
+
+## 📁 Project Structure
+
+src/
+├── assets/        # Images and static files
+├── components/    # Reusable UI components
+├── pages/         # Page-level components
+├── App.jsx        # Main application component
+├── main.jsx       # Entry point
+└── index.css      # Global styles
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run the project locally:
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/NohaCode-lab/Jewelry-Store-website.git
