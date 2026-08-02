@@ -19,7 +19,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install Dependencies
+      - name: Install Frontend Dependencies
         run: npm ci
 
       - name: Run ESLint Linter
@@ -30,3 +30,9 @@ jobs:
 
       - name: Build Production Bundle (TypeScript + Vite)
         run: npm run build
+
+      - name: Install Backend Dependencies
+        run: npm --prefix backend ci
+
+      - name: Run Backend API Integration Tests
+        run: npm --prefix backend test
