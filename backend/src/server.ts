@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import { ENV } from './config/env';
 import authRoutes from './routes/authRoutes';
 import productRoutes from './routes/productRoutes';
@@ -8,6 +10,10 @@ import { errorHandler } from './middleware/errorMiddleware';
 
 const app = express();
 
+app.use(helmet());
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('dev'));
+}
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
