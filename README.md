@@ -1,6 +1,7 @@
 # 💎 Mangata & Gallo — AI Luxury Commerce SaaS Platform
 
 [![CI/CD Pipeline](https://github.com/NohaCode-lab/Jewelry-Store-website/actions/workflows/ci.yml/badge.svg)](https://github.com/NohaCode-lab/Jewelry-Store-website/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/NohaCode-lab/Jewelry-Store-website)](https://github.com/NohaCode-lab/Jewelry-Store-website/releases)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-61dafb.svg?logo=react)](https://react.dev/)
 [![Zustand](https://img.shields.io/badge/State-Zustand-764abc.svg)](https://zustand-demo.pmnd.rs/)
@@ -9,6 +10,17 @@
 [![Supabase](https://img.shields.io/badge/Backend-Supabase_PostgreSQL-3ecf8e.svg?logo=supabase)](https://supabase.com/)
 
 A production-ready, full-stack AI-powered luxury jewelry commerce SaaS application combining a high-performance React 18 / TypeScript frontend, Zustand persistent state stores, TanStack Query data fetching, Supabase PostgreSQL database migrations, serverless Edge Functions, and vector similarity search.
+
+---
+
+## Latest Engineering Updates
+
+### v2.1.0 - Responsive Luxury Navigation Architecture Upgrade
+
+- Production-grade responsive header system
+- Improved navigation stability across breakpoints
+- Enhanced mobile/tablet transition behavior
+- Full validation with TypeScript, ESLint, Vitest, and production build
 
 ---
 
