@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import BackToTop from '../components/BackToTop';
 import Home from '../pages/Home';
 
+import { AuthProvider } from '../features/auth/AuthProvider';
 import { CartDrawer } from '../features/cart/CartDrawer';
 import { WishlistDrawer } from '../features/wishlist/WishlistDrawer';
 import { SearchModal } from '../features/search/SearchModal';
@@ -20,31 +21,33 @@ export const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className="bg-[#020617] text-white min-h-screen font-sans selection:bg-amber-500 selection:text-black">
-        {/* Toast Notifications */}
-        <Toaster position="bottom-right" theme="dark" richColors closeButton />
+      <AuthProvider>
+        <div className="bg-[#020617] text-white min-h-screen font-sans selection:bg-amber-500 selection:text-black">
+          {/* Toast Notifications */}
+          <Toaster position="bottom-right" theme="dark" richColors closeButton />
 
-        {/* Header Navigation */}
-        <Navbar />
+          {/* Header Navigation */}
+          <Navbar />
 
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Home />} />
-        </Routes>
+          {/* Routes */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Home />} />
+          </Routes>
 
-        {/* Global Modals & Drawers */}
-        <CartDrawer />
-        <WishlistDrawer />
-        <SearchModal />
-        <CheckoutModal />
-        <AIConciergeModal />
-        <ProductModal product={activeCustomizingProduct} onClose={() => setCustomizingProduct(null)} />
+          {/* Global Modals & Drawers */}
+          <CartDrawer />
+          <WishlistDrawer />
+          <SearchModal />
+          <CheckoutModal />
+          <AIConciergeModal />
+          <ProductModal product={activeCustomizingProduct} onClose={() => setCustomizingProduct(null)} />
 
-        {/* Footer & BackToTop */}
-        <Footer />
-        <BackToTop />
-      </div>
+          {/* Footer & BackToTop */}
+          <Footer />
+          <BackToTop />
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   );
 };
