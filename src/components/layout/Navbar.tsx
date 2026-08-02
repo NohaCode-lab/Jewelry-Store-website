@@ -39,8 +39,8 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-500 ${
-        scrolled ? 'bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-2xl py-3' : 'bg-black/60 backdrop-blur-md py-4'
+      className={`sticky top-0 z-50 transition-all duration-500 ${
+        scrolled ? 'bg-[#030712] border-b border-amber-500/20 shadow-2xl py-3' : 'bg-[#030712]/90 backdrop-blur-md py-4'
       }`}
     >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center gap-4">
@@ -127,35 +127,38 @@ export const Navbar: React.FC = () => {
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+      </div>
 
-        {/* MOBILE MENU */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 w-full bg-[#090d16]/95 backdrop-blur-2xl border-b border-amber-500/20 shadow-2xl lg:hidden"
-            >
-              <ul className="flex flex-col items-center py-6 gap-4">
+      {/* MOBILE MENU DROPDOWN */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="overflow-hidden bg-[#030712] border-b border-amber-500/30 shadow-2xl lg:hidden"
+          >
+            <div className="container mx-auto px-6 py-4">
+              <ul className="flex flex-col items-center gap-3">
                 {navLinks.map((link) => (
-                  <li key={link.id}>
+                  <li key={link.id} className="w-full text-center">
                     <button
                       onClick={() => {
                         handleNavClick(link.id);
                         setIsOpen(false);
                       }}
-                      className="text-white/90 text-sm tracking-widest uppercase hover:text-amber-400 transition font-medium py-1"
+                      className="w-full py-2 text-white/90 text-xs tracking-widest uppercase hover:text-amber-400 hover:bg-white/5 rounded-lg transition font-medium"
                     >
                       {link.name}
                     </button>
                   </li>
                 ))}
               </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
