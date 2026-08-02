@@ -5,7 +5,12 @@ import { Toaster } from 'sonner';
 import { Navbar } from '../components/layout/Navbar';
 import Footer from '../components/Footer';
 import BackToTop from '../components/BackToTop';
+
 import Home from '../pages/Home';
+import AboutPage from '../pages/AboutPage';
+import DesignerPage from '../pages/DesignerPage';
+import CollectionsPage from '../pages/CollectionsPage';
+import ContactPage from '../pages/ContactPage';
 
 import { AuthProvider } from '../features/auth/AuthProvider';
 import { CartDrawer } from '../features/cart/CartDrawer';
@@ -32,7 +37,11 @@ export const App: React.FC = () => {
           {/* Routes */}
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Home />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/designer" element={<DesignerPage />} />
+            <Route path="/collections" element={<CollectionsPage />} />
+            <Route path="/shop" element={<CollectionsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
 
           {/* Global Modals & Drawers */}
