@@ -1,13 +1,16 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Sparkles, Compass, Plus } from 'lucide-react';
 import { useCartStore } from '../../stores/cartStore';
 import { useUIStore } from '../../stores/uiStore';
+import { PRODUCTS } from '../../data/products';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export const CartDrawer: React.FC = () => {
+  const navigate = useNavigate();
   const { isCartOpen, setCartOpen, setCheckoutOpen } = useUIStore();
-  const { items, removeItem, updateQuantity, getSummary } = useCartStore();
+  const { items, addItem, removeItem, updateQuantity, getSummary } = useCartStore();
   const summary = getSummary();
 
   const handleCheckoutClick = () => {
@@ -17,6 +20,18 @@ export const CartDrawer: React.FC = () => {
     }
     setCartOpen(false);
     setCheckoutOpen(true);
+  };
+
+  const handleExploreClick = () => {
+    setCartOpen(false);
+    navigate('/collections');
+  };
+
+  const handleAddSampleItem = () => {
+    if (PRODUCTS.length > 0) {
+      addItem(PRODUCTS[0], PRODUCTS[0].availableMetals[0]);
+      toast.success(`Added ${PRODUCTS[0].title} to luxury cart`);
+    }
   };
 
   return (
@@ -54,6 +69,7 @@ export const CartDrawer: React.FC = () => {
                 <button
                   onClick={() => setCartOpen(false)}
                   className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-full transition"
+                  title="Close Cart"
                 >
                   <X size={20} />
                 </button>
@@ -87,12 +103,34 @@ export const CartDrawer: React.FC = () => {
               {/* Cart Items List */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {items.length === 0 ? (
-                  <div className="text-center py-16 text-white/50 space-y-4">
-                    <ShoppingBag size={48} className="mx-auto text-white/20" />
-                    <p className="text-lg font-playfair">Your shopping bag is empty</p>
-                    <p className="text-xs max-w-xs mx-auto">
-                      Explore our high jewelry collections to add handcrafted rings, necklaces, and tiaras.
-                    </p>
+                  <div className="text-center py-12 text-white/60 space-y-5">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-amber-400/60">
+                      <ShoppingBag size={36} />
+                    </div>
+                    <div>
+                      <p className="text-xl font-playfair text-white font-medium">Your shopping bag is empty</p>
+                      <p className="text-xs text-white/50 max-w-xs mx-auto mt-1">
+                        Explore our high jewelry collections to add handcrafted rings, necklaces, and tiaras.
+                      </p>
+                    </div>
+
+                    <div className="pt-4 flex flex-col gap-3 max-w-xs mx-auto">
+                      <button
+                        onClick={handleExploreClick}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition"
+                      >
+                        <Compass size={16} />
+                        <span>Explore High Jewelry</span>
+                      </button>
+
+                      <button
+                        onClick={handleAddSampleItem}
+                        className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-amber-400 text-xs font-medium flex items-center justify-center gap-1.5 transition"
+                      >
+                        <Plus size={14} />
+                        <span>Add Sample Solitaire Ring ($2,450)</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   items.map((item) => (

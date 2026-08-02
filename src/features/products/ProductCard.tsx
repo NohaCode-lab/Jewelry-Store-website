@@ -13,13 +13,14 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCartStore();
   const { isFavorite, toggleFavorite } = useWishlistStore();
-  const { setCustomizingProduct } = useUIStore();
+  const { setCustomizingProduct, setCartOpen } = useUIStore();
   const favorited = isFavorite(product.id);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     addItem(product, product.availableMetals[0]);
     toast.success(`Added ${product.title} to cart`);
+    setCartOpen(true);
   };
 
   return (
