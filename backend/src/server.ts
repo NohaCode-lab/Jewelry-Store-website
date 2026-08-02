@@ -14,7 +14,22 @@ app.use(helmet());
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
-app.use(cors({ origin: '*' }));
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3000', 'https://mangatagallo.com'];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || process.env.NODE_ENV !== 'production' || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS policy: Not allowed by origin'));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // API Routes

@@ -23,11 +23,57 @@ describe('Product Catalog API Endpoints', () => {
     expect(res.body).toHaveProperty('name');
   });
 
-  it('POST /api/products - should reject non-admin request', async () => {
+  it('GET /api/products/:id - should return 404 for non-existent product', async () => {
+    const res = await request(app).get('/api/products/non-existent-id');
+    expect(res.status).toBe(404);
+  });
+
+  it('POST /api/products - should reject unauthenticated request with 401', async () => {
     const res = await request(app).post('/api/products').send({
       name: 'Unauthorized Ring',
       price: 5000,
     });
     expect(res.status).toBe(401);
+  });
+
+  it('POST /api/products - should reject non-admin user request with 403', async () => {
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: 'vip.client@mangatagallo.com',
+      password: 'Password123!',
+    });
+    const token = loginRes.body.token;
+
+    const res = await request(app)
+      .post('/api/products')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'VIP Attempt Ring',
+        price: 5000,
+      });
+
+    expect(res.status).toBe(403);
+  });
+
+  it('POST /api/products - should create product when authenticated as ADMIN', async () => {
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: 'admin@mangatagallo.com',
+      password: 'Password123!',
+    });
+    const adminToken = loginRes.body.token;
+
+    const res = await request(app)
+      .post('/api/products')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Bespoke Diamond Crown',
+        description: 'Exclusive Atelier creation',
+        price: 15000,
+        category: 'crowns',
+        image: '/assets/crown-1.jpg',
+        stock: 2,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('name', 'Bespoke Diamond Crown');
   });
 });

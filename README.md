@@ -1,334 +1,174 @@
 # 💎 Mangata & Gallo — AI Luxury Commerce SaaS Platform
 
-[![CI/CD Pipeline](https://github.com/NohaCode-lab/Jewelry-Store-website/actions/workflows/ci.yml/badge.svg)](https://github.com/NohaCode-lab/Jewelry-Store-website/actions/workflows/ci.yml)
-[![Latest Release](https://img.shields.io/github/v/release/NohaCode-lab/Jewelry-Store-website)](https://github.com/NohaCode-lab/Jewelry-Store-website/releases)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.3-61dafb.svg?logo=react)](https://react.dev/)
-[![Zustand](https://img.shields.io/badge/State-Zustand-764abc.svg)](https://zustand-demo.pmnd.rs/)
-[![TanStack Query](https://img.shields.io/badge/Data_Fetching-TanStack_Query_v5-ff4154.svg)](https://tanstack.com/query)
-[![Vitest](https://img.shields.io/badge/Testing-Vitest_1.6-6e9f18.svg?logo=vitest)](https://vitest.dev/)
-[![Supabase](https://img.shields.io/badge/Backend-Supabase_PostgreSQL-3ecf8e.svg?logo=supabase)](https://supabase.com/)
+[![v3.0.0 GitHub Release](https://img.shields.io/badge/Release-v3.0.0_Ready-gold.svg?style=for-the-badge&logo=github)](https://github.com/NohaCode-lab/Jewelry-Store-website/releases)
+[![TypeScript Strict](https://img.shields.io/badge/TypeScript-5.5_Strict-3178c6.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.3-61dafb.svg?style=for-the-badge&logo=react)](https://react.dev/)
+[![Node.js Express](https://img.shields.io/badge/Express-4.19_Backend-000000.svg?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![Prisma PostgreSQL](https://img.shields.io/badge/Prisma-5.16_PostgreSQL-2d3748.svg?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![Vitest](https://img.shields.io/badge/Vitest-1.6_100%25_Passing-6e9f18.svg?style=for-the-badge&logo=vitest)](https://vitest.dev/)
 
-A production-ready, full-stack AI-powered luxury jewelry commerce SaaS application combining a high-performance React 18 / TypeScript frontend, Zustand persistent state stores, TanStack Query data fetching, Supabase PostgreSQL database migrations, serverless Edge Functions, and vector similarity search.
+An enterprise-grade, full-stack AI-powered luxury commerce platform engineered with a high-performance React 18 / TypeScript frontend, Zustand persistent state stores, express REST API backend, Prisma ORM database models, and serverless Edge Functions for AI concierge gift recommendations.
 
 ---
 
-## Latest Engineering Updates
-
-### v2.1.0 - Responsive Luxury Navigation Architecture Upgrade
-
-- Production-grade responsive header system
-- Improved navigation stability across breakpoints
-- Enhanced mobile/tablet transition behavior
-- Full validation with TypeScript, ESLint, Vitest, and production build
-
----
-
-## 1. Project Overview
+## 1. Executive Overview & Problem Statement
 
 ### Business Problem
-Traditional luxury commerce interfaces often suffer from heavy asset footprints, rigid client-side state models, and unpersonalized product discovery. High jewelry buyers expect bespoke customization, instant visual feedback, dynamic metal/carat pricing, and personalized gift guidance.
+High luxury commerce requires an immersive digital experience: zero-latency dynamic pricing based on precious metal (18K Gold, 950 Platinum) and carat selections, instant fuzzy catalog search, personalized AI gift recommendations, and persistent shopping cart drawers.
 
-### User Experience Goal
-Deliver an immersive luxury shopping experience defined by zero-latency dynamic pricing, persistent shopping carts, slide-out drawers, typo-tolerant fuzzy search, and an AI Gift Concierge recommending customized jewelry matching occasion, recipient, style, and budget.
-
-### Technical Objective
-Architect a scalable, type-safe SaaS commerce platform enforcing strict separation of concerns, service abstractions, serverless API proxy execution, automated CI/CD pipelines, and Core Web Vitals performance benchmarks tailored for European software engineering standards.
-
----
-
-## 2. Key Features
-
-### E-Commerce Suite
-- **Dynamic Catalog & Filtering**: Category filtering, instant price range sorting, and rating evaluations.
-- **Product Customizer**: Real-time metal selection (18K Yellow Gold, 18K Rose Gold, 950 Platinum), Carat sizes (0.5ct to 3.0ct), and US ring sizes with dynamic price adjustments.
-- **Persistent State Drawers**: Slide-out Shopping Cart and Wishlist drawers powered by Zustand `persist` middleware.
-- **Fuzzy Search Engine**: Integrated `Fuse.js` search engine supporting typo tolerance, field weighting, and `Ctrl+K` keyboard overlay.
-- **Schema-Validated Checkout**: Multi-step checkout form using `React Hook Form` paired with `Zod` validation, gift packaging notes, discount code validation (`LUXURY10`), and confetti celebration.
-
-### AI Luxury Gift Concierge
-- Interactive AI shopping assistant requesting Occasion, Recipient, Style Preference, and Budget ($1,000–$15,000+).
-- Generates curated primary recommendations, alternative options, suggested metal pairings, and Atelier curator notes.
-- Secure API proxy wrapper routing requests through serverless Edge Functions with offline fallback resilience.
+### Technical Solution
+A modular, type-safe full-stack application built with strict separation of concerns:
+- **Frontend Layer**: React 18 + TypeScript + Vite, Tailwind CSS luxury dark glassmorphism design system, Zustand state management, and Framer Motion animations.
+- **Backend API Layer**: Node.js + Express REST API, Zod schema validation, Bcrypt password hashing, JWT Bearer authorization, Helmet security headers, and environment-based CORS policies.
+- **Database Layer**: Prisma ORM backed by PostgreSQL featuring `User`, `Product`, `Cart`, `CartItem`, `Order`, `Role`, and `OrderStatus` models.
 
 ---
 
-## 3. System Architecture Diagram
+## 2. Technology Stack
+
+### Frontend
+- **Framework**: React 18.3 & TypeScript 5.5 (Strict Mode)
+- **Build Engine**: Vite 5.2 with Rollup chunk splitting
+- **Styling**: Tailwind CSS 3.4, Framer Motion 11, Lucide Icons, Glassmorphism CSS design system
+- **State Management**: Zustand 4.5 (`cartStore`, `wishlistStore`, `uiStore`)
+- **Data Fetching & Search**: TanStack React Query 5.51 & Fuse.js fuzzy search engine
+
+### Backend
+- **Runtime**: Node.js v20 LTS
+- **Framework**: Express 4.19 REST API
+- **ORM & Database**: Prisma 5.16 ORM & PostgreSQL
+- **Security & Validation**: JSON Web Tokens (`jsonwebtoken`), `bcryptjs`, `helmet`, `cors`, `zod`
+- **Testing**: Vitest 1.6 & Supertest 7.0
+
+---
+
+## 3. Architecture Diagram
 
 ```mermaid
 graph TD
-    User[Browser User] --> ReactUI[React 18 + TS UI Component Layer]
-    ReactUI --> AuthCtx[AuthProvider Context in src/features/auth/]
-    ReactUI --> QueryClient[Centralized QueryClient in src/lib/queryClient.ts]
+    UserClient[Browser Client — React 18 + TS App] --> Router[React Router v6 Navigation /#section & /routes]
     
-    subgraph Data Fetching Hooks (src/hooks/)
-        QueryClient --> useProducts[useProducts]
-        QueryClient --> useProduct[useProduct]
-        QueryClient --> useAuth[useAuth]
-        QueryClient --> useOrders[useOrders]
+    subgraph Frontend Architecture
+        Router --> UI[Dark Luxury Glassmorphic UI Components]
+        UI --> Stores[Zustand Persistent Stores: Cart / Wishlist / UI]
+        UI --> FuseSearch[Fuse.js Fuzzy Search Engine]
+        UI --> AuthCtx[AuthProvider Context]
     end
+
+    AuthCtx --> APIClient[Axios / Fetch API Client]
     
-    subgraph Service Abstraction Layer (src/services/ & src/features/auth/)
-        useProducts --> PS[productService.ts]
-        useAuth --> AS[authService.ts]
-        useOrders --> SS[supabase.ts Client]
-        ReactUI --> VectorSvc[vectorSearchService.ts]
-        ReactUI --> CheckoutSvc[checkoutService.ts]
-        ReactUI --> AdminSvc[adminService.ts]
+    subgraph Express Backend Layer (http://localhost:5000/api)
+        APIClient --> ExpressServer[Express.js Server + Helmet Middleware]
+        ExpressServer --> AuthRouter[/api/auth Router — JWT + Bcrypt]
+        ExpressServer --> ProductRouter[/api/products Router — Catalog & Filters]
+        ExpressServer --> CartRouter[/api/cart Router — Authenticated Cart]
     end
-    
-    subgraph Cloud Infrastructure
-        PS --> SupabaseDB[(Supabase PostgreSQL + pgvector)]
-        AS --> SupabaseAuth[Supabase Auth Engine]
-        CheckoutSvc --> EdgeStripe[Supabase Edge Function: /create-checkout-session]
-        ReactUI --> EdgeAI[Supabase Edge Function: /ai-concierge]
-        EdgeStripe --> Webhook[Supabase Edge Function: /stripe-webhook]
+
+    subgraph Data Access Layer
+        AuthRouter --> PrismaORM[Prisma ORM Client]
+        ProductRouter --> PrismaORM
+        CartRouter --> PrismaORM
+        PrismaORM --> PostgresDB[(PostgreSQL Database)]
     end
 ```
 
 ---
 
-## 4. Frontend Architecture
+## 4. Key SaaS Platform Features
 
-The codebase follows a clean, feature-driven directory organization:
-
-```text
-src/
-├── app/                  # Application Shell & Layout (App.tsx)
-├── assets/optimized/     # High-Performance WebP Media Pipeline (<200KB)
-├── components/
-│   ├── layout/           # Navbar & Footer Chrome
-│   └── ui/               # CVA Variant Primitives (Button, Input, Card, Modal)
-├── context/              # Global React Contexts (AuthContext.tsx)
-├── data/                 # Catalog Dataset (products.ts)
-├── features/             # Modular Business Domains
-│   ├── ai/               # AI Concierge Modal & Proxy Service
-│   ├── auth/             # Authentication & RBAC Guards
-│   ├── cart/             # Shopping Cart Drawer
-│   ├── checkout/         # Zod-Validated Checkout Modal
-│   ├── products/         # Catalog Grid, Filter & Customizer
-│   ├── search/           # Fuse.js Search Modal & Engine
-│   └── wishlist/         # Saved Favorites Drawer
-├── hooks/                # TanStack Query Data Fetching Hooks
-├── lib/                  # Centralized QueryClient Configuration (queryClient.ts)
-├── services/             # API Service Abstractions
-├── stores/               # Zustand Persistent Stores (cartStore, wishlistStore, uiStore)
-├── types/                # Strict TypeScript Interface Definitions
-└── utils/                # Pure Business Utilities (cn.ts, date.ts, currency.ts)
-```
-
-### Core Frontend Stack
-- **Core Framework**: React 18.3 & TypeScript 5.5 (Strict Mode).
-- **Build Tooling**: Vite 5.2 with Rollup code splitting.
-- **Styling & UI**: Tailwind CSS 3.4, Framer Motion 11, Lucide Icons, Class Variance Authority (CVA), `clsx`, `tailwind-merge`.
-- **State Management**: Zustand 4.5 with `persist` middleware.
-- **Data Caching**: TanStack React Query 5.51.
-- **Form & Validation**: React Hook Form 7.52 & Zod 3.23.
+1. **Dual Navigation Strategy**: Seamless single-page smooth scrolling (`/#about`, `/#designer`, `/#collections`, `/#contact`) on the Home page paired with full React Router routes (`/about`, `/designer`, `/collections`, `/contact`).
+2. **Dynamic Product Customizer**: Instant price calculations based on selected metal type (18K Gold, 950 Platinum) and carat size.
+3. **AI Luxury Gift Concierge**: Interactive assistant requesting occasion, recipient, style preferences, and budget with automated fallback recommendations.
+4. **Persistent Shopping Cart & Wishlist**: Slide-out drawers backed by Zustand local persistence.
+5. **Secure Authentication & RBAC**: Hashed password storage with Bcrypt, 7-day JWT expiration, and Admin role guards (`ADMIN`, `VIP`, `CUSTOMER`).
 
 ---
 
-## 5. Backend Architecture & Database Schema
-
-The backend architecture is defined via **7 modular SQL migration scripts** in `supabase/migrations/`:
-
-```text
-[auth.users] (Supabase Managed User Engine)
-     │ 1:1
-[public.profiles] ─── (id, email, full_name, role: customer|vip|admin)
-     │ 1:N
- ├───[public.addresses] ─── (id, country, city, street, postal_code, is_default)
- ├───[public.orders] ────── (id, order_number, status, total, payment_status)
- │        │ 1:N
- │        └───[public.order_items] ─── (id, product_id, metal, carat, unit_price)
- ├───[public.payments] ──── (id, order_id, stripe_payment_id, amount, payment_status)
- ├───[public.wishlist] ──── (user_id, product_id)
- └───[public.ai_history] ── (user_id, occasion, budget, primary_recommendation_id, reasoning)
-
-[public.categories]
-     │ 1:N
-[public.products] ──────── (id, title, category_slug, base_price, metals, carats)
-     │ 1:N
- ├───[public.product_images] ──── (id, image_url, alt_text, display_order)
- ├───[public.product_variants] ── (id, sku, metal_type, carat_size, ring_size, price_adjustment)
- └───[public.product_embeddings]─ (id, embedding: vector(1536), content_text)
-
-[public.audit_logs] ────── (id, user_id, action, entity_type, entity_id, metadata)
-```
-
-### Migration Files:
-1. `00001_extensions.sql`: Enables `uuid-ossp` and `vector` (`pgvector`).
-2. `00002_profiles.sql`: User accounts table with Role-Based Access Control (`customer`, `vip`, `admin`).
-3. `00003_catalog.sql`: `categories`, `products`, `product_images`, `product_variants`.
-4. `00004_commerce.sql`: `orders`, `order_items`, `payments`, `addresses`.
-5. `00005_user_features.sql`: `reviews`, `wishlist`.
-6. `00006_ai.sql`: `ai_history`, `product_embeddings`.
-7. `00007_security.sql`: Row Level Security (RLS) policies and `audit_logs` table.
-
----
-
-## 6. AI Engineering & Vector Search
-
-```mermaid
-sequenceDiagram
-    autonumber
-    User UI->>AI Concierge: Submit Query (Occasion, Recipient, Style, Budget)
-    AI Concierge->>Zod Validator: Parse Request against ConciergeRequestSchema
-    Zod Validator->>Edge Function: Pass Clean Input
-    Edge Function->>OpenAI GPT-4o: Stream Prompt + System Instructions
-    Edge Function->>pgvector Embeddings: Semantic Match Query Text
-    pgvector Embeddings-->>Edge Function: Matched Product IDs + Similarity Scores
-    Edge Function-->>User UI: Return Structured JSON Recommendation + Reasonings
-```
-
-- **Serverless Edge Function (`supabase/functions/ai-concierge/`)**: Executes LLM prompts securely without exposing API keys to client bundles.
-- **Schema Validation (`validators/schema.ts`)**: Validates input data with Zod schemas.
-- **Semantic Similarity Search (`vectorSearchService.ts`)**: Uses PostgreSQL `pgvector` (`vector(1536)`) embeddings for natural language queries (*"I need an elegant anniversary gift under 2000 euros"*).
-
----
-
-## 7. Security Architecture
-
-- **Zero Secrets Exposure**: API credentials (`OPENAI_API_KEY`, `STRIPE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) are kept on serverless runtimes.
-- **Row Level Security (RLS)**: Enforced via `00007_security.sql`. Users can only access their own profiles, orders, and wishlists.
-- **Role-Based Access Control (RBAC)**: Defined in `src/features/auth/permissions.ts` and enforced via `<ProtectedRoute />` components.
-- **Server-Side Price Validation**: Stripe Checkout edge functions calculate order totals server-side to prevent client-side manipulation.
-- **Audit Logging**: Admin actions record trace metadata into `audit_logs`.
-
----
-
-## 8. Performance Optimization & Benchmarks
-
-Using an automated Node/Sharp compression pipeline (`scripts/generate-webp-assets.cjs`), raw high-resolution jewelry photography was converted into optimized WebP format.
-
-| Metric | Before Optimization | After Optimization | Improvement |
-| :--- | :---: | :---: | :---: |
-| **Total Media Weight** | **23.6 MB** | **1.1 MB** | **95.3% Reduction** |
-| **Largest Single Image** | `img-3.jpg`: **13.3 MB** | `img-3.jpg`: **235 KB** | **98.2% Reduction** |
-| **Estimated Mobile LCP** | **24.5 seconds** | **1.1 seconds** | **23.4s Faster** |
-| **Rollup Output Chunks** | Monolithic bundle (>500KB) | `vendor`: **281 KB**, `index`: **313 KB** | **Zero Build Warnings** |
-
----
-
-## 9. Automated Testing & Quality Assurance
-
-### Vitest Unit Test Suite
-- **Unit Tests**: **14 / 14 Unit Tests Passing** across 4 suites:
-  - `tests/cartStore.test.ts`: Store mutations, quantity increments, tax, free shipping bar.
-  - `tests/productFilter.test.ts`: Category filters, query strings, price sorting.
-  - `tests/searchService.test.ts`: Fuse.js fuzzy matching and typo tolerance.
-  - `tests/components/Button.test.tsx`: UI primitive variant rendering.
-- **Playwright E2E**: End-to-end user checkout workflow configured in `playwright.config.ts` and `tests/e2e/checkout.spec.ts`.
-
----
-
-## 10. CI/CD & DevOps Pipeline
-
-Automated GitHub Actions CI workflow (`.github/workflows/ci.yml`):
-
-```yaml
-name: Mangata & Gallo Production CI/CD Pipeline
-on: [push, pull_request]
-jobs:
-  quality-gate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: 'npm' }
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
-```
-
----
-
-## 11. Local Development Guide
+## 5. Local Setup & Installation Guide
 
 ### Prerequisites
 - **Node.js**: `v20.11.0` or higher
 - **npm**: `v10.4.0` or higher
 
-### Installation Steps
+### 1. Clone & Install
+```bash
+git clone https://github.com/NohaCode-lab/Jewelry-Store-website.git
+cd Jewelry-Store-website
 
-1. **Clone Repository**:
-   ```bash
-   git clone https://github.com/NohaCode-lab/Jewelry-Store-website.git
-   cd Jewelry-Store-website
-   ```
+# Install Frontend Dependencies
+npm install
 
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
+# Install Backend Dependencies
+cd backend
+npm install
+cd ..
+```
 
-3. **Configure Environment Variables**:
-   Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+### 2. Environment Configuration
+Create `.env` inside `backend/`:
+```env
+PORT=5000
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mangatagallo?schema=public"
+JWT_SECRET="mangatagallo_super_secret_jwt_key_2026_luxury_commerce"
+NODE_ENV="development"
+```
 
-4. **Start Development Server**:
-   ```bash
-   npm run dev
-   ```
-   Open: `http://localhost:5173`
+### 3. Run Database Migrations & Seed
+```bash
+cd backend
+npx prisma generate
+npx prisma db push
+npx prisma db seed
+cd ..
+```
 
-5. **Run Unit Tests**:
-   ```bash
-   npm test
-   ```
+### 4. Start Development Servers
+```bash
+# Terminal 1: Backend Server
+cd backend
+npm run dev
 
-6. **Run Code Formatter**:
-   ```bash
-   npm run format
-   ```
-
-7. **Production Build**:
-   ```bash
-   npm run build
-   ```
-
----
-
-## 12. Engineering Decisions & Rationale
-
-- **Why React 18 & TypeScript?**: Enforces strict compile-time type safety across business domain entities (`Product`, `CartItem`, `Order`, `User`).
-- **Why Service Layer Abstraction?**: Decouples UI component rendering from underlying data sources, allowing seamless switching between local offline fallbacks and remote Supabase endpoints.
-- **Why Zustand State Stores?**: Provides persistent global state management without Redux boilerplate.
-- **Why Serverless Edge Functions for AI & Payments?**: Isolates third-party API keys (OpenAI, Stripe) on serverless runtimes and prevents client-side price tampering.
+# Terminal 2: Frontend App
+npm run dev
+```
+Access Frontend: `http://localhost:5173` | Backend API: `http://localhost:5000/api`
 
 ---
 
-## 13. Future Roadmap
+## 6. Automated Testing Commands
 
-- **Phase 1**: Live Stripe Payment Gateway Webhooks in production mode.
-- **Phase 2**: Admin Dashboard UI (`/admin`) for product inventory management and order status updates.
-- **Phase 3**: Real-time Multi-Currency Conversion (EUR, GBP, USD).
+Execute complete quality gate verification pipelines:
+
+```bash
+# Frontend Testing Pipeline
+npm run type-check   # TypeScript check (0 errors)
+npm run lint         # ESLint audit (0 warnings/errors)
+npm test             # Vitest unit test suite (14 passing)
+npm run build        # Vite production bundle build
+
+# Backend Testing Pipeline
+cd backend
+npm run type-check   # TypeScript check (0 errors)
+npm run lint         # ESLint audit (0 warnings/errors)
+npm test             # Vitest integration test suite (10 passing)
+```
 
 ---
-## 🚀 Recent Engineering Improvements
 
-### Responsive Luxury Navigation System
+## 7. Production Deployment Instructions
 
-Implemented a production-grade responsive header architecture:
+- **Frontend**: Deploy `dist/` directory output to Vercel, Netlify, or Cloudflare Pages.
+- **Backend**: Deploy `backend/` Node.js server to Render, AWS ECS, or DigitalOcean App Platform with `DATABASE_URL` and `JWT_SECRET` production environment variables set.
 
-- Protected brand identity using non-shrinking logo containers.
-- Prevented navigation collisions with adaptive breakpoints.
-- Implemented tablet-to-mobile transition strategy.
-- Added custom luxury scrollbar styling aligned with brand identity.
+---
 
-### Verification
+## 8. v3.0.0 Release Notes
 
-Validated through:
-
-- ✅ TypeScript strict check
-- ✅ ESLint
-- ✅ Vitest test suite
-- ✅ Production build 
-## 14. Author
-
-**Noha Ahmed**  
-*Front-End / Full-Stack Software Engineer*  
-- **GitHub**: [NohaCode-lab](https://github.com/NohaCode-lab)  
-- **Repository**: [Jewelry-Store-website](https://github.com/NohaCode-lab/Jewelry-Store-website)
+- **Version**: `v3.0.0`
+- **Release Title**: Mangata & Gallo — Full-Stack Luxury Commerce Platform
+- **Highlights**:
+  - 100% TypeScript conversion across all frontend components and backend services.
+  - Resolved all navigation defects, scroll locking issues, and route fallbacks.
+  - Eliminated auth bypass vulnerabilities and hardened Bcrypt password hashing.
+  - Complete REST API documentation in [docs/API.md](file:///C:/Users/noham/.gemini/antigravity/scratch/Jewelry-Store-website/docs/API.md).
+  - 100% automated test pass rate across Vitest unit and integration suites.

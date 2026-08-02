@@ -1,11 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 import { hashPassword, comparePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
 import { AuthRequest } from '../middleware/authMiddleware';
 
-// Mock in-memory user repository fallback when DB is disconnected
-const memoryUsers: any[] = [];
+// Seeded in-memory user repository
+const memoryUsers: any[] = [
+  {
+    id: 'usr-vip-001',
+    name: 'Lady Mariana Gallo',
+    email: 'vip.client@mangatagallo.com',
+    passwordHash: bcrypt.hashSync('Password123!', 10),
+    role: 'VIP',
+    createdAt: new Date(),
+  },
+  {
+    id: 'usr-admin-001',
+    name: 'Atelier Admin',
+    email: 'admin@mangatagallo.com',
+    passwordHash: bcrypt.hashSync('Password123!', 10),
+    role: 'ADMIN',
+    createdAt: new Date(),
+  },
+];
 
 const RegisterSchema = z.object({
   name: z.string().min(2),
@@ -51,25 +69,15 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = LoginSchema.parse(req.body);
-    let user = memoryUsers.find((u) => u.email === email);
+    const user = memoryUsers.find((u) => u.email === email);
 
     if (!user) {
-      // Create fallback demo user if logging in first time
-      const passwordHash = await hashPassword(password);
-      user = {
-        id: 'usr-vip-001',
-        name: 'Lady Mariana Gallo',
-        email,
-        passwordHash,
-        role: 'VIP',
-        createdAt: new Date(),
-      };
-      memoryUsers.push(user);
-    } else {
-      const match = await comparePassword(password, user.passwordHash);
-      if (!match) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const match = await comparePassword(password, user.passwordHash);
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const token = generateToken({ userId: user.id, email: user.email, role: user.role });

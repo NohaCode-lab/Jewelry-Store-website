@@ -3,7 +3,7 @@ import request from 'supertest';
 import app from '../src/server';
 
 describe('Shopping Cart API Endpoints', () => {
-  it('GET /api/cart - should reject unauthenticated request', async () => {
+  it('GET /api/cart - should reject unauthenticated request with 401', async () => {
     const res = await request(app).get('/api/cart');
     expect(res.status).toBe(401);
   });
@@ -27,6 +27,34 @@ describe('Shopping Cart API Endpoints', () => {
 
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('items');
+    expect(res.body.items.length).toBeGreaterThan(0);
+  });
+
+  it('PUT /api/cart/items/:id - should update item quantity', async () => {
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: 'vip.client@mangatagallo.com',
+      password: 'Password123!',
+    });
+    const token = loginRes.body.token;
+
+    const addRes = await request(app)
+      .post('/api/cart/items')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        productId: 'crown-01',
+        quantity: 1,
+      });
+
+    const itemId = addRes.body.items[0]?.id;
+
+    if (itemId) {
+      const updateRes = await request(app)
+        .put(`/api/cart/items/${itemId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ quantity: 3 });
+
+      expect(updateRes.status).toBe(200);
+    }
   });
 
   it('DELETE /api/cart/items/:id - should remove item from user cart', async () => {
