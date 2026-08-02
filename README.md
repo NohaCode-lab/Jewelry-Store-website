@@ -11,6 +11,18 @@ An enterprise-grade, full-stack AI-powered luxury commerce platform engineered w
 
 ---
 
+## 🖼️ Interface & Product Showcase
+
+| Master Atelier Hero | High Jewelry Collections |
+| :---: | :---: |
+| ![Hero Banner](src/assets/hero.jpg) | ![Catalog Showcase](src/assets/rings/ring-1.jpg) |
+
+| Master Designer Atelier | Empress Emerald Tiara |
+| :---: | :---: |
+| ![Master Designer](src/assets/designer.jpg) | ![Crown Tiara](src/assets/crown/crown-1.jpg) |
+
+---
+
 ## 1. Executive Overview & Problem Statement
 
 ### Business Problem
@@ -143,14 +155,14 @@ Execute complete quality gate verification pipelines:
 # Frontend Testing Pipeline
 npm run type-check   # TypeScript check (0 errors)
 npm run lint         # ESLint audit (0 warnings/errors)
-npm test             # Vitest unit test suite (14 passing)
+npm test             # Vitest unit test suite (19 passing)
 npm run build        # Vite production bundle build
 
 # Backend Testing Pipeline
 cd backend
 npm run type-check   # TypeScript check (0 errors)
 npm run lint         # ESLint audit (0 warnings/errors)
-npm test             # Vitest integration test suite (10 passing)
+npm test             # Vitest integration test suite (18 passing)
 ```
 
 ---
