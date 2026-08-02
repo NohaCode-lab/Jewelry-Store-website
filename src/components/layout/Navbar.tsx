@@ -28,14 +28,14 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { id: 'about', name: 'About' },
-    { id: 'designer', name: 'Designer' },
-    { id: 'products', name: 'Collections' },
-    { id: 'contacts', name: 'Contact' },
+    { id: 'about', name: 'About', path: '/about' },
+    { id: 'designer', name: 'Designer', path: '/designer' },
+    { id: 'collections', name: 'Collections', path: '/collections' },
+    { id: 'contact', name: 'Contact', path: '/contact' },
   ];
 
-  const handleNavClick = (id: string) => {
-    if (id === 'home') {
+  const handleNavClick = (path: string, id: string) => {
+    if (path === '/') {
       if (location.pathname !== '/') {
         navigate('/');
       } else {
@@ -44,20 +44,7 @@ export const Navbar: React.FC = () => {
       return;
     }
 
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    } else {
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    navigate(path);
   };
 
   return (
@@ -70,7 +57,7 @@ export const Navbar: React.FC = () => {
     >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center gap-3">
         {/* LOGO */}
-        <button onClick={() => handleNavClick('home')} className="flex items-center gap-2.5 group shrink-0">
+        <button onClick={() => handleNavClick('/', 'home')} className="flex items-center gap-2.5 group shrink-0">
           <img
             src={logo2}
             alt="Mangata & Gallo"
@@ -87,11 +74,15 @@ export const Navbar: React.FC = () => {
             {navLinks.map((link) => (
               <li key={link.id}>
                 <button
-                  onClick={() => handleNavClick(link.id)}
-                  className="relative text-white/80 hover:text-amber-400 tracking-widest text-[11px] lg:text-xs uppercase transition duration-300 py-1 whitespace-nowrap font-medium group"
+                  onClick={() => handleNavClick(link.path, link.id)}
+                  className={`relative tracking-widest text-[11px] lg:text-xs uppercase transition duration-300 py-1 whitespace-nowrap font-medium group ${
+                    location.pathname === link.path ? 'text-amber-400 font-semibold' : 'text-white/80 hover:text-amber-400'
+                  }`}
                 >
                   {link.name}
-                  <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-300 group-hover:w-full" />
+                  <span className={`absolute left-0 -bottom-1 h-[1px] bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-300 ${
+                    location.pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`} />
                 </button>
               </li>
             ))}
@@ -174,10 +165,12 @@ export const Navbar: React.FC = () => {
                   <li key={link.id} className="w-full text-center">
                     <button
                       onClick={() => {
-                        handleNavClick(link.id);
+                        handleNavClick(link.path, link.id);
                         setIsOpen(false);
                       }}
-                      className="w-full py-2 text-white/90 text-xs tracking-widest uppercase hover:text-amber-400 hover:bg-white/5 rounded-lg transition font-medium"
+                      className={`w-full py-2 text-xs tracking-widest uppercase hover:text-amber-400 hover:bg-white/5 rounded-lg transition font-medium ${
+                        location.pathname === link.path ? 'text-amber-400 font-bold bg-white/5' : 'text-white/90'
+                      }`}
                     >
                       {link.name}
                     </button>
