@@ -7,6 +7,20 @@ import { useCartStore } from '../../stores/cartStore';
 import { useWishlistStore } from '../../stores/wishlistStore';
 import { useUIStore } from '../../stores/uiStore';
 
+export interface NavLinkItem {
+  id: string;
+  name: string;
+  path: string;
+  hash: string;
+}
+
+export const navLinks: NavLinkItem[] = [
+  { id: 'about', name: 'About', path: '/about', hash: '#about' },
+  { id: 'designer', name: 'Designer', path: '/designer', hash: '#designer' },
+  { id: 'collections', name: 'Collections', path: '/collections', hash: '#products' },
+  { id: 'contact', name: 'Contact', path: '/contact', hash: '#contacts' },
+];
+
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -27,24 +41,38 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { id: 'about', name: 'About', path: '/about' },
-    { id: 'designer', name: 'Designer', path: '/designer' },
-    { id: 'collections', name: 'Collections', path: '/collections' },
-    { id: 'contact', name: 'Contact', path: '/contact' },
-  ];
-
-  const handleNavClick = (path: string, id: string) => {
-    if (path === '/') {
-      if (location.pathname !== '/') {
-        navigate('/');
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-      return;
+  // Lock background body scroll when mobile menu drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
     }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
 
-    navigate(path);
+  const handleNavClick = (link: NavLinkItem) => {
+    if (location.pathname === '/') {
+      navigate(`/${link.hash}`);
+      const sectionId = link.hash.replace('#', '');
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      navigate(link.path);
+    }
+  };
+
+  const handleLogoClick = () => {
+    if (location.pathname === '/') {
+      navigate('/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+    }
   };
 
   return (
@@ -57,35 +85,43 @@ export const Navbar: React.FC = () => {
     >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center gap-3">
         {/* LOGO */}
-        <button onClick={() => handleNavClick('/', 'home')} className="flex items-center gap-2.5 group shrink-0">
+        <button onClick={handleLogoClick} className="flex items-center gap-2.5 group shrink-0">
           <img
             src={logo2}
             alt="Mangata & Gallo"
             className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-full ring-1 ring-amber-500/40 transition duration-300 group-hover:scale-105 shrink-0"
           />
           <span className="text-sm sm:text-base md:text-lg lg:text-xl font-playfair tracking-wide text-white group-hover:text-amber-400 transition whitespace-nowrap">
-            Mangata & Gallo
+            Mangata &amp; Gallo
           </span>
         </button>
 
         {/* DESKTOP & TABLET NAV */}
         <nav className="hidden md:flex items-center justify-center mx-2">
           <ul className="flex items-center gap-4 lg:gap-8">
-            {navLinks.map((link) => (
-              <li key={link.id}>
-                <button
-                  onClick={() => handleNavClick(link.path, link.id)}
-                  className={`relative tracking-widest text-[11px] lg:text-xs uppercase transition duration-300 py-1 whitespace-nowrap font-medium group ${
-                    location.pathname === link.path ? 'text-amber-400 font-semibold' : 'text-white/80 hover:text-amber-400'
-                  }`}
-                >
-                  {link.name}
-                  <span className={`absolute left-0 -bottom-1 h-[1px] bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-300 ${
-                    location.pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`} />
-                </button>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive =
+                location.pathname === link.path ||
+                (location.pathname === '/' && location.hash === link.hash);
+
+              return (
+                <li key={link.id}>
+                  <button
+                    onClick={() => handleNavClick(link)}
+                    className={`relative tracking-widest text-[11px] lg:text-xs uppercase transition duration-300 py-1 whitespace-nowrap font-medium group ${
+                      isActive ? 'text-amber-400 font-semibold' : 'text-white/80 hover:text-amber-400'
+                    }`}
+                  >
+                    {link.name}
+                    <span
+                      className={`absolute left-0 -bottom-1 h-[1px] bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-300 ${
+                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}
+                    />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
@@ -140,6 +176,7 @@ export const Navbar: React.FC = () => {
 
           {/* MOBILE MENU TOGGLE */}
           <button
+            aria-label="Toggle Menu"
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-white p-1 ml-0.5 hover:text-amber-400 transition"
             title="Toggle Navigation"
@@ -161,21 +198,27 @@ export const Navbar: React.FC = () => {
           >
             <div className="container mx-auto px-4 py-3">
               <ul className="flex flex-col items-center gap-2">
-                {navLinks.map((link) => (
-                  <li key={link.id} className="w-full text-center">
-                    <button
-                      onClick={() => {
-                        handleNavClick(link.path, link.id);
-                        setIsOpen(false);
-                      }}
-                      className={`w-full py-2 text-xs tracking-widest uppercase hover:text-amber-400 hover:bg-white/5 rounded-lg transition font-medium ${
-                        location.pathname === link.path ? 'text-amber-400 font-bold bg-white/5' : 'text-white/90'
-                      }`}
-                    >
-                      {link.name}
-                    </button>
-                  </li>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive =
+                    location.pathname === link.path ||
+                    (location.pathname === '/' && location.hash === link.hash);
+
+                  return (
+                    <li key={link.id} className="w-full text-center">
+                      <button
+                        onClick={() => {
+                          handleNavClick(link);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full py-2 text-xs tracking-widest uppercase hover:text-amber-400 hover:bg-white/5 rounded-lg transition font-medium ${
+                          isActive ? 'text-amber-400 font-bold bg-white/5' : 'text-white/90'
+                        }`}
+                      >
+                        {link.name}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </motion.div>

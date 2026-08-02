@@ -11,6 +11,7 @@ import AboutPage from '../pages/AboutPage';
 import DesignerPage from '../pages/DesignerPage';
 import CollectionsPage from '../pages/CollectionsPage';
 import ContactPage from '../pages/ContactPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 import { AuthProvider } from '../features/auth/AuthProvider';
 import { CartDrawer } from '../features/cart/CartDrawer';
@@ -42,6 +43,7 @@ export const App: React.FC = () => {
             <Route path="/collections" element={<CollectionsPage />} />
             <Route path="/shop" element={<CollectionsPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
 
           {/* Global Modals & Drawers */}

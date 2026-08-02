@@ -25,6 +25,26 @@ describe('Authentication API Endpoints', () => {
     expect(res.body).toHaveProperty('token');
   });
 
+  it('POST /api/auth/login - should reject invalid password with 401', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: 'vip.client@mangatagallo.com',
+      password: 'WrongPassword!',
+    });
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('POST /api/auth/login - should reject non-existent user with 401', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: 'nonexistent@mangatagallo.com',
+      password: 'Password123!',
+    });
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
   it('GET /api/auth/me - should return profile when token is provided', async () => {
     const loginRes = await request(app).post('/api/auth/login').send({
       email: 'vip.client@mangatagallo.com',
@@ -39,5 +59,20 @@ describe('Authentication API Endpoints', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.user).toHaveProperty('email', 'vip.client@mangatagallo.com');
+  });
+
+  it('GET /api/auth/me - should reject request without Bearer token with 401', async () => {
+    const res = await request(app).get('/api/auth/me');
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('GET /api/auth/me - should reject invalid Bearer token with 401', async () => {
+    const res = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', 'Bearer invalid_token_string');
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
   });
 });
