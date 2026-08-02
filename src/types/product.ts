@@ -14,6 +14,7 @@ export interface ProductCustomization {
 export interface Product {
   id: string;
   title: string;
+  slug?: string;
   category: ProductCategory;
   price: number;
   description: string;
@@ -25,6 +26,7 @@ export interface Product {
   isNewArrival?: boolean;
   isBestSeller?: boolean;
   inStock: boolean;
+  stockQuantity?: number;
   availableMetals: MetalType[];
   availableCarats?: CaratSize[];
 }

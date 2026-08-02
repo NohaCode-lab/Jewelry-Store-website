@@ -1,5 +1,5 @@
-import { User } from '../types/user';
-import { supabase } from './supabase';
+import { User } from '../../types/user';
+import { supabase } from '../../services/supabase';
 
 export const authService = {
   async getCurrentUser(): Promise<User | null> {
@@ -17,7 +17,7 @@ export const authService = {
         };
       }
     } catch (err) {
-      console.warn('Supabase auth getSession fallback:', err);
+      console.warn('Auth getSession fallback:', err);
     }
 
     return {
@@ -25,38 +25,6 @@ export const authService = {
       email: 'vip.client@mangatagallo.com',
       fullName: 'Lady Mariana Gallo',
       role: 'vip',
-      createdAt: new Date().toISOString(),
-    };
-  },
-
-  async signUp(email: string, pass: string, fullName: string): Promise<User> {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password: pass,
-        options: {
-          data: { full_name: fullName, role: 'customer' },
-        },
-      });
-      if (error) throw error;
-      if (data.user) {
-        return {
-          id: data.user.id,
-          email: data.user.email || email,
-          fullName,
-          role: 'customer',
-          createdAt: data.user.created_at,
-        };
-      }
-    } catch (err) {
-      console.warn('Supabase auth signUp fallback:', err);
-    }
-
-    return {
-      id: 'usr-' + Math.random().toString(36).substring(2, 9),
-      email,
-      fullName,
-      role: 'customer',
       createdAt: new Date().toISOString(),
     };
   },
@@ -77,7 +45,7 @@ export const authService = {
         }
       }
     } catch (err) {
-      console.warn('Supabase auth signIn fallback:', err);
+      console.warn('Auth login fallback:', err);
     }
 
     return {
@@ -89,11 +57,41 @@ export const authService = {
     };
   },
 
+  async signUp(email: string, pass: string, fullName: string): Promise<User> {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password: pass,
+        options: { data: { full_name: fullName, role: 'customer' } },
+      });
+      if (error) throw error;
+      if (data.user) {
+        return {
+          id: data.user.id,
+          email: data.user.email || email,
+          fullName,
+          role: 'customer',
+          createdAt: data.user.created_at,
+        };
+      }
+    } catch (err) {
+      console.warn('Auth signUp fallback:', err);
+    }
+
+    return {
+      id: 'usr-' + Math.random().toString(36).substring(2, 9),
+      email,
+      fullName,
+      role: 'customer',
+      createdAt: new Date().toISOString(),
+    };
+  },
+
   async logout(): Promise<void> {
     try {
       await supabase.auth.signOut();
     } catch (err) {
-      console.warn('Supabase auth signOut error:', err);
+      console.warn('Auth logout error:', err);
     }
   },
 
@@ -101,7 +99,7 @@ export const authService = {
     try {
       await supabase.auth.resetPasswordForEmail(email);
     } catch (err) {
-      console.warn('Supabase auth resetPassword error:', err);
+      console.warn('Auth resetPassword error:', err);
     }
   },
 };
