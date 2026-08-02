@@ -11,6 +11,14 @@ export interface ProductCustomization {
   engravingText?: string;
 }
 
+export interface ProductVariantInfo {
+  url: string;
+  title: string;
+  price: number;
+  description: string;
+  metal: MetalType;
+}
+
 export interface Product {
   id: string;
   title: string;
@@ -21,6 +29,7 @@ export interface Product {
   details: string[];
   mainImage: string;
   images: string[];
+  imageVariants?: ProductVariantInfo[];
   rating: number;
   reviewsCount: number;
   isNewArrival?: boolean;

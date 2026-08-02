@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, ShoppingBag, ShieldCheck, Sparkles, Check } from 'lucide-react';
 import { Product, MetalType, CaratSize } from '../../types/product';
@@ -15,31 +15,71 @@ interface ProductModalProps {
 export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   if (!product) return null;
 
-  const [selectedMetal, setSelectedMetal] = useState<MetalType>(product.availableMetals[0] || '18K Yellow Gold');
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+  const [selectedMetal, setSelectedMetal] = useState<MetalType>(
+    product.imageVariants?.[0]?.metal || product.availableMetals[0] || '18K Yellow Gold'
+  );
   const [selectedCarat, setSelectedCarat] = useState<CaratSize | undefined>(product.availableCarats?.[0]);
   const [ringSize, setRingSize] = useState<number>(6);
-  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+
+  // Sync state when active image changes
+  const activeVariant = product.imageVariants?.[activeImageIndex];
+  const activeTitle = activeVariant?.title || product.title;
+  const activeDescription = activeVariant?.description || product.description;
+  const basePrice = activeVariant?.price || product.price;
+
+  // When metal button is clicked, auto-switch thumbnail if matching image variant exists
+  const handleMetalSelect = (metal: MetalType) => {
+    setSelectedMetal(metal);
+    if (product.imageVariants) {
+      const matchingIdx = product.imageVariants.findIndex((v) => v.metal === metal);
+      if (matchingIdx !== -1) {
+        setActiveImageIndex(matchingIdx);
+      }
+    }
+  };
+
+  // When thumbnail image is clicked, update active index and sync metal selection
+  const handleImageClick = (idx: number) => {
+    setActiveImageIndex(idx);
+    const variant = product.imageVariants?.[idx];
+    if (variant?.metal) {
+      setSelectedMetal(variant.metal);
+    }
+  };
+
+  // Calculate dynamic price multiplier (Carat & Platinum)
+  let priceMultiplier = 1.0;
+  if (selectedMetal === '950 Platinum' && !activeVariant) priceMultiplier = 1.25;
+  if (selectedCarat === '2.0 ct') priceMultiplier *= 1.4;
+  if (selectedCarat === '3.0 ct') priceMultiplier *= 1.8;
+  const calculatedPrice = Math.round(basePrice * priceMultiplier);
 
   const { addItem } = useCartStore();
   const { isFavorite, toggleFavorite } = useWishlistStore();
   const { setCartOpen, setCheckoutOpen } = useUIStore();
   const favorited = isFavorite(product.id);
 
-  // Dynamic price modifier calculation
-  let priceMultiplier = 1.0;
-  if (selectedMetal === '950 Platinum') priceMultiplier = 1.25;
-  if (selectedCarat === '2.0 ct') priceMultiplier *= 1.4;
-  if (selectedCarat === '3.0 ct') priceMultiplier *= 1.8;
-  const calculatedPrice = Math.round(product.price * priceMultiplier);
-
   const handleAddToCart = () => {
-    addItem(product, selectedMetal, selectedCarat, product.category === 'rings' ? ringSize : undefined);
-    toast.success(`Added ${product.title} (${selectedMetal}) to cart`);
+    const customizedProduct = {
+      ...product,
+      title: activeTitle,
+      price: calculatedPrice,
+      mainImage: product.images[activeImageIndex] || product.mainImage,
+    };
+    addItem(customizedProduct, selectedMetal, selectedCarat, product.category === 'rings' ? ringSize : undefined);
+    toast.success(`Added ${activeTitle} (${selectedMetal}) to cart`);
     onClose();
   };
 
   const handleBuyNow = () => {
-    addItem(product, selectedMetal, selectedCarat, product.category === 'rings' ? ringSize : undefined);
+    const customizedProduct = {
+      ...product,
+      title: activeTitle,
+      price: calculatedPrice,
+      mainImage: product.images[activeImageIndex] || product.mainImage,
+    };
+    addItem(customizedProduct, selectedMetal, selectedCarat, product.category === 'rings' ? ringSize : undefined);
     onClose();
     setCartOpen(false);
     setCheckoutOpen(true);
@@ -48,6 +88,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -56,6 +97,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
           className="fixed inset-0 bg-black/80 backdrop-blur-md"
         />
 
+        {/* Modal Window */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -75,49 +117,63 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
             <div className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/50">
               <img
                 src={product.images[activeImageIndex] || product.mainImage}
-                alt={product.title}
+                alt={activeTitle}
                 className="w-full h-full object-cover transition-all duration-500"
               />
               <button
                 onClick={() => toggleFavorite(product)}
                 className="absolute top-3 left-3 p-2.5 rounded-full bg-black/60 border border-white/20 text-white/80 hover:text-rose-400 transition"
+                title="Save to Wishlist"
               >
                 <Heart size={18} fill={favorited ? '#f43f5e' : 'none'} className={favorited ? 'text-rose-500' : ''} />
               </button>
             </div>
 
-            {/* Thumbnail selector */}
+            {/* Thumbnail Selector */}
             <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
-              {product.images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImageIndex(idx)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
-                    activeImageIndex === idx
-                      ? 'border-amber-400 scale-105'
-                      : 'border-white/10 opacity-60 hover:opacity-100'
-                  }`}
-                >
-                  <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
+              {product.images.map((img, idx) => {
+                const varInfo = product.imageVariants?.[idx];
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleImageClick(idx)}
+                    className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition shrink-0 ${
+                      activeImageIndex === idx
+                        ? 'border-amber-400 scale-105 shadow-md shadow-amber-500/20'
+                        : 'border-white/10 opacity-60 hover:opacity-100'
+                    }`}
+                    title={varInfo?.title || `View ${idx + 1}`}
+                  >
+                    <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                    {varInfo && (
+                      <span className="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-amber-400 text-center py-0.5 font-medium truncate px-0.5">
+                        ${varInfo.price.toLocaleString()}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Right Column: Customizer Details */}
+          {/* Right Column: Dynamic Product Details */}
           <div className="p-6 md:p-8 flex flex-col justify-between space-y-6">
             <div>
               <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold">{product.category}</span>
-              <h2 className="text-2xl md:text-3xl font-playfair font-bold text-white mt-1">{product.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-playfair font-bold text-white mt-1 transition-all duration-300">
+                {activeTitle}
+              </h2>
               <div className="flex items-center gap-3 mt-2">
-                <span className="text-2xl font-semibold text-amber-400 font-playfair">
+                <span className="text-2xl font-semibold text-amber-400 font-playfair transition-all duration-300">
                   ${calculatedPrice.toLocaleString()}
                 </span>
                 <span className="text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
                   {product.rating} ★ ({product.reviewsCount} reviews)
                 </span>
               </div>
-              <p className="text-xs text-white/70 mt-4 leading-relaxed">{product.description}</p>
+              <p className="text-xs text-white/70 mt-4 leading-relaxed transition-all duration-300">
+                {activeDescription}
+              </p>
             </div>
 
             {/* Customization Options */}
@@ -129,7 +185,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                   {product.availableMetals.map((metal) => (
                     <button
                       key={metal}
-                      onClick={() => setSelectedMetal(metal)}
+                      onClick={() => handleMetalSelect(metal)}
                       className={`text-xs py-2 px-3 rounded-lg border text-left flex items-center justify-between transition ${
                         selectedMetal === metal
                           ? 'border-amber-400 bg-amber-500/10 text-amber-300 font-medium'
@@ -137,7 +193,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                       }`}
                     >
                       <span>{metal}</span>
-                      {selectedMetal === metal && <Check size={14} className="text-amber-400" />}
+                      {selectedMetal === metal && <Check size={14} className="text-amber-400 shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -147,7 +203,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
               {product.availableCarats && (
                 <div>
                   <label className="text-xs text-white/70 block mb-2 font-medium">Select Diamond Carat Weight</label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {product.availableCarats.map((carat) => (
                       <button
                         key={carat}
