@@ -25,7 +25,7 @@ jobs:
       - name: Run ESLint Linter
         run: npm run lint
 
-      - name: Run Vitest Unit Tests
+      - name: Run Vitest Unit Tests & Coverage
         run: npm test
 
       - name: Build Production Bundle (TypeScript + Vite)
