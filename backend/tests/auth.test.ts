@@ -75,4 +75,23 @@ describe('Authentication API Endpoints', () => {
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('error');
   });
+
+  it('GET /api/auth/gdpr-export - should return structured GDPR user data export when authenticated', async () => {
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: 'vip.client@mangatagallo.com',
+      password: 'Password123!',
+    });
+
+    const token = loginRes.body.token;
+
+    const res = await request(app)
+      .get('/api/auth/gdpr-export')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('gdprNotice');
+    expect(res.body).toHaveProperty('userProfile');
+    expect(res.body.userProfile).toHaveProperty('email', 'vip.client@mangatagallo.com');
+  });
 });
+

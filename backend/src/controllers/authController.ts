@@ -99,3 +99,27 @@ export const getMe = async (req: AuthRequest, res: Response) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
   return res.json({ user: req.user });
 };
+
+export const exportGdprData = async (req: AuthRequest, res: Response) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  
+  const user = memoryUsers.find((u) => u.id === req.user?.userId) || req.user;
+
+  return res.json({
+    exportDate: new Date().toISOString(),
+    gdprNotice: 'Under GDPR Article 20, you have the right to receive your personal data in a structured, machine-readable format.',
+    userProfile: {
+      id: user.id || req.user.userId,
+      name: user.name || 'Valued Client',
+      email: user.email || req.user.email,
+      role: user.role || req.user.role,
+      createdAt: user.createdAt || new Date().toISOString(),
+    },
+    privacySettings: {
+      dataProcessingConsent: true,
+      essentialCookies: true,
+      analyticsConsent: false,
+    },
+  });
+};
+

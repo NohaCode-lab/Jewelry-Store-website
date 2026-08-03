@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Container
+  postgres:
+    image: postgres:16-alpine
+    container_name: mangata-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mangatagallo_prod
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: production_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mangatagallo_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Full-Stack API & Web Application Container
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mangata-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:production_secure_password_2026@postgres:5432/mangatagallo_prod?schema=public
+      JWT_SECRET: production_jwt_secret_mangatagallo_2026
+      ALLOWED_ORIGINS: http://localhost:5000,http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
