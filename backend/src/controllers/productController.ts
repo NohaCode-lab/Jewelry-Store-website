@@ -1,42 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-
-const mockProducts = [
-  {
-    id: 'ring-01',
-    name: 'The Eternal Solitaire Ring',
-    description: 'A timeless 2.0 carat round brilliant diamond set in pure 950 Platinum.',
-    price: 2450,
-    category: 'rings',
-    image: '/assets/ring-1.jpg',
-    stock: 12,
-  },
-  {
-    id: 'crown-01',
-    name: 'The Empress Emerald Tiara',
-    description: 'Hand-set Colombian emeralds surrounded by VVS1 diamonds.',
-    price: 12800,
-    category: 'crowns',
-    image: '/assets/crown-1.jpg',
-    stock: 3,
-  },
-  {
-    id: 'necklace-01',
-    name: 'The Royal Sapphire Choker',
-    description: 'Deep royal blue sapphires linked by delicate 18K white gold strands.',
-    price: 6400,
-    category: 'necklace',
-    image: '/assets/necklace-1.jpg',
-    stock: 5,
-  },
-];
+import { productRepository } from '../repositories/productRepository';
+import { sendSuccess, sendError } from '../utils/response';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { category, search, sort } = req.query;
-    let results = [...mockProducts];
+    let results = await productRepository.findAll();
 
     if (category && category !== 'all') {
-      results = results.filter((p) => p.category === category);
+      results = results.filter((p) => p.category.toLowerCase() === String(category).toLowerCase());
     }
 
     if (search) {
@@ -49,7 +21,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
     if (sort === 'price-low') results.sort((a, b) => a.price - b.price);
     if (sort === 'price-high') results.sort((a, b) => b.price - a.price);
 
-    return res.json(results);
+    return sendSuccess(res, results);
   } catch (err) {
     next(err);
   }
@@ -57,9 +29,9 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
 
 export const getProductById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const product = mockProducts.find((p) => p.id === req.params.id);
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-    return res.json(product);
+    const product = await productRepository.findById(req.params.id);
+    if (!product) return sendError(res, 'Product not found', 404, 'PRODUCT_NOT_FOUND');
+    return sendSuccess(res, product);
   } catch (err) {
     next(err);
   }
@@ -70,10 +42,8 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
     const newProduct = {
       id: 'prod-' + Math.random().toString(36).substring(2, 9),
       ...req.body,
-      createdAt: new Date(),
     };
-    mockProducts.push(newProduct);
-    return res.status(201).json(newProduct);
+    return sendSuccess(res, newProduct, 201, 'Product created successfully');
   } catch (err) {
     next(err);
   }
@@ -81,10 +51,10 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
 
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const index = mockProducts.findIndex((p) => p.id === req.params.id);
-    if (index === -1) return res.status(404).json({ error: 'Product not found' });
-    mockProducts[index] = { ...mockProducts[index], ...req.body };
-    return res.json(mockProducts[index]);
+    const product = await productRepository.findById(req.params.id);
+    if (!product) return sendError(res, 'Product not found', 404, 'PRODUCT_NOT_FOUND');
+    const updated = { ...product, ...req.body };
+    return sendSuccess(res, updated);
   } catch (err) {
     next(err);
   }
@@ -92,10 +62,9 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
 export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const index = mockProducts.findIndex((p) => p.id === req.params.id);
-    if (index === -1) return res.status(404).json({ error: 'Product not found' });
-    mockProducts.splice(index, 1);
-    return res.json({ message: 'Product deleted successfully' });
+    const product = await productRepository.findById(req.params.id);
+    if (!product) return sendError(res, 'Product not found', 404, 'PRODUCT_NOT_FOUND');
+    return sendSuccess(res, { message: 'Product deleted successfully' });
   } catch (err) {
     next(err);
   }

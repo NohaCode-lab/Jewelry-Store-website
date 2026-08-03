@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { hashPassword, comparePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { sendSuccess, sendError } from '../utils/response';
+import { refreshTokenRepository } from '../repositories/refreshTokenRepository';
 
 // Seeded in-memory user repository
 const memoryUsers: any[] = [
@@ -41,7 +44,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { name, email, password } = RegisterSchema.parse(req.body);
     const existing = memoryUsers.find((u) => u.email === email);
     if (existing) {
-      return res.status(400).json({ error: 'User already exists with this email' });
+      return sendError(res, 'User already exists with this email', 400, 'USER_EXISTS');
     }
 
     const passwordHash = await hashPassword(password);
@@ -57,10 +60,27 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
     const token = generateToken({ userId: newUser.id, email: newUser.email, role: newUser.role });
 
-    return res.status(201).json({
-      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role },
-      token,
+    // Issue Hashed Refresh Token & Set HTTP-Only Cookie
+    const rawRefreshToken = crypto.randomBytes(40).toString('hex');
+    const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    await refreshTokenRepository.createToken(newUser.id, rawRefreshToken, refreshExpiresAt);
+
+    res.cookie('mg_refresh_token', rawRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: refreshExpiresAt,
     });
+
+    return sendSuccess(
+      res,
+      {
+        user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role },
+        token,
+      },
+      201,
+      'User registered successfully'
+    );
   } catch (err) {
     next(err);
   }
@@ -72,17 +92,29 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = memoryUsers.find((u) => u.email === email);
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return sendError(res, 'Invalid credentials', 401, 'INVALID_CREDENTIALS');
     }
 
     const match = await comparePassword(password, user.passwordHash);
     if (!match) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return sendError(res, 'Invalid credentials', 401, 'INVALID_CREDENTIALS');
     }
 
     const token = generateToken({ userId: user.id, email: user.email, role: user.role });
 
-    return res.json({
+    // Issue Hashed Refresh Token & Set HTTP-Only Cookie
+    const rawRefreshToken = crypto.randomBytes(40).toString('hex');
+    const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await refreshTokenRepository.createToken(user.id, rawRefreshToken, refreshExpiresAt);
+
+    res.cookie('mg_refresh_token', rawRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: refreshExpiresAt,
+    });
+
+    return sendSuccess(res, {
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
       token,
     });
@@ -91,21 +123,65 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const rawToken = req.cookies?.mg_refresh_token || req.body?.refreshToken;
+    if (!rawToken) {
+      return sendError(res, 'Refresh token required', 401, 'REFRESH_TOKEN_REQUIRED');
+    }
+
+    const validRecord = await refreshTokenRepository.findValidToken(rawToken);
+    if (!validRecord) {
+      return sendError(res, 'Invalid or revoked refresh token', 401, 'INVALID_REFRESH_TOKEN');
+    }
+
+    // Refresh Token Rotation: Revoke previous token and issue a new pair
+    await refreshTokenRepository.revokeToken(rawToken);
+
+    const user = memoryUsers.find((u) => u.id === validRecord.userId) || {
+      id: validRecord.userId,
+      email: 'client@mangatagallo.com',
+      role: 'CUSTOMER',
+    };
+
+    const newAccessToken = generateToken({ userId: user.id, email: user.email, role: user.role });
+    const newRawRefreshToken = crypto.randomBytes(40).toString('hex');
+    const newRefreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await refreshTokenRepository.createToken(user.id, newRawRefreshToken, newRefreshExpiresAt);
+
+    res.cookie('mg_refresh_token', newRawRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: newRefreshExpiresAt,
+    });
+
+    return sendSuccess(res, { token: newAccessToken }, 200, 'Access token refreshed successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const logout = async (req: Request, res: Response) => {
-  return res.json({ message: 'Logged out successfully' });
+  const rawToken = req.cookies?.mg_refresh_token;
+  if (rawToken) {
+    await refreshTokenRepository.revokeToken(rawToken);
+  }
+  res.clearCookie('mg_refresh_token');
+  return sendSuccess(res, { message: 'Logged out successfully' });
 };
 
 export const getMe = async (req: AuthRequest, res: Response) => {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-  return res.json({ user: req.user });
+  if (!req.user) return sendError(res, 'Unauthorized', 401, 'UNAUTHORIZED');
+  return sendSuccess(res, { user: req.user });
 };
 
 export const exportGdprData = async (req: AuthRequest, res: Response) => {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-  
+  if (!req.user) return sendError(res, 'Unauthorized', 401, 'UNAUTHORIZED');
+
   const user = memoryUsers.find((u) => u.id === req.user?.userId) || req.user;
 
-  return res.json({
+  return sendSuccess(res, {
     exportDate: new Date().toISOString(),
     gdprNotice: 'Under GDPR Article 20, you have the right to receive your personal data in a structured, machine-readable format.',
     userProfile: {
@@ -122,4 +198,3 @@ export const exportGdprData = async (req: AuthRequest, res: Response) => {
     },
   });
 };
-

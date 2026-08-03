@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { sendSuccess } from '../utils/response';
 
 const userCarts: Record<string, any[]> = {};
 
@@ -7,7 +8,7 @@ export const getCart = async (req: AuthRequest, res: Response, next: NextFunctio
   try {
     const userId = req.user?.userId || 'guest';
     const items = userCarts[userId] || [];
-    return res.json({ userId, items });
+    return sendSuccess(res, { userId, items });
   } catch (err) {
     next(err);
   }
@@ -35,7 +36,7 @@ export const addItemToCart = async (req: AuthRequest, res: Response, next: NextF
       });
     }
 
-    return res.status(201).json({ userId, items: userCarts[userId] });
+    return sendSuccess(res, { userId, items: userCarts[userId] }, 201);
   } catch (err) {
     next(err);
   }
@@ -52,7 +53,7 @@ export const updateCartItem = async (req: AuthRequest, res: Response, next: Next
       if (item) item.quantity = quantity;
     }
 
-    return res.json({ userId, items: userCarts[userId] || [] });
+    return sendSuccess(res, { userId, items: userCarts[userId] || [] });
   } catch (err) {
     next(err);
   }
@@ -67,7 +68,7 @@ export const deleteCartItem = async (req: AuthRequest, res: Response, next: Next
       userCarts[userId] = userCarts[userId].filter((i) => i.id !== id);
     }
 
-    return res.json({ userId, items: userCarts[userId] || [] });
+    return sendSuccess(res, { userId, items: userCarts[userId] || [] });
   } catch (err) {
     next(err);
   }
