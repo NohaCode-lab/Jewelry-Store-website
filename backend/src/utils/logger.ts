@@ -1,5 +1,11 @@
-export const logger = {
-  info: (msg: string, ...meta: any[]) => console.log(`[INFO] ${new Date().toISOString()} - ${msg}`, ...meta),
-  error: (msg: string, ...meta: any[]) => console.error(`[ERROR] ${new Date().toISOString()} - ${msg}`, ...meta),
-  warn: (msg: string, ...meta: any[]) => console.warn(`[WARN] ${new Date().toISOString()} - ${msg}`, ...meta),
-};
+import pino from 'pino';
+
+export const logger = pino({
+  level: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
+  base: {
+    service: 'mangatagallo-backend',
+    env: process.env.NODE_ENV || 'development',
+  },
+});
+
+export default logger;
