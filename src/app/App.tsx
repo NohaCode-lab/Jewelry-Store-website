@@ -20,6 +20,7 @@ import { SearchModal } from '../features/search/SearchModal';
 import { ProductModal } from '../features/products/ProductModal';
 import { CheckoutModal } from '../features/checkout/CheckoutModal';
 import { AIConciergeModal } from '../features/ai/AIConciergeModal';
+import CookieConsent from '../components/CookieConsent';
 import { useUIStore } from '../stores/uiStore';
 
 export const App: React.FC = () => {
@@ -54,9 +55,10 @@ export const App: React.FC = () => {
           <AIConciergeModal />
           <ProductModal product={activeCustomizingProduct} onClose={() => setCustomizingProduct(null)} />
 
-          {/* Footer & BackToTop */}
+          {/* Footer, BackToTop & Privacy Consent */}
           <Footer />
           <BackToTop />
+          <CookieConsent />
         </div>
       </AuthProvider>
     </BrowserRouter>

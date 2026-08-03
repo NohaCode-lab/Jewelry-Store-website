@@ -32,7 +32,14 @@ app.use(
 );
 app.use(express.json());
 
-// API Routes
+import { authRateLimiter, generalApiLimiter } from './middleware/rateLimitMiddleware';
+
+// API Routes & Rate Limiting
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api/', generalApiLimiter);
+  app.use('/api/auth/', authRateLimiter);
+}
+
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
