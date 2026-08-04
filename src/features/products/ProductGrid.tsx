@@ -45,7 +45,7 @@ export const ProductGrid: React.FC = () => {
   }, [filterState]);
 
   return (
-    <section id="products" className="py-24 bg-[#0a0f1d] text-white">
+    <section id="products" data-section="collections" className="py-24 bg-[#0a0f1d] text-white">
       <div className="container mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs uppercase tracking-[0.3em] text-amber-400 font-semibold">Exquisite Collections</span>
