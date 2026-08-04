@@ -16,8 +16,11 @@ import { errorHandler } from './middleware/errorMiddleware';
 import { authRateLimiter, generalApiLimiter } from './middleware/rateLimitMiddleware';
 import { logger } from './utils/logger';
 
+import { correlationIdMiddleware } from './middleware/correlationMiddleware';
+
 const app = express();
 
+app.use(correlationIdMiddleware);
 app.use(helmet());
 app.use(cookieParser());
 
