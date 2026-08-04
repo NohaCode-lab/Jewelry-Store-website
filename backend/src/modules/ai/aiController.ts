@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { RagAiService } from '../../services/ragAiService';
+import { sendSuccess } from '../../utils/response';
 
 const AiSearchSchema = z.object({
   query: z.string().min(2),
@@ -12,7 +13,7 @@ export const searchAiConcierge = async (req: Request, res: Response, next: NextF
     const { query, maxBudget } = AiSearchSchema.parse(req.body);
     const recommendations = RagAiService.performVectorSearch(query, maxBudget, 3);
 
-    return res.json({
+    return sendSuccess(res, {
       query,
       maxBudget,
       ragArchitecture: 'PostgreSQL pgvector / Cosine Distance Similarity',
