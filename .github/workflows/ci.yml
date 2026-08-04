@@ -64,10 +64,6 @@ jobs:
       - name: Build Production Docker Image
         run: docker build -t mangatagallo-app:latest .
 
-      - name: Install Trivy Security Scanner CLI
-        uses: aquasecurity/setup-trivy@v1
-        with:
-          version: 'latest'
-
-      - name: Run Container Vulnerability Scan
-        run: trivy image --severity CRITICAL,HIGH --exit-code 0 mangatagallo-app:latest
+      - name: Run Trivy Container Vulnerability Scanner
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL,HIGH --exit-code 0 mangatagallo-app:latest
