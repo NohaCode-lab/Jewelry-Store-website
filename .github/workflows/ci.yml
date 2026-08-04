@@ -10,6 +10,18 @@ jobs:
   quality-and-security:
     name: Quality Gate, Security Scanning & Docker Build
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Codebase
         uses: actions/checkout@v4
@@ -36,6 +48,11 @@ jobs:
         run: npm --prefix backend ci
 
       - name: Run Backend API Integration Tests
+        env:
+          NODE_ENV: test
+          REDIS_URL: redis://localhost:6379
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
         run: npm --prefix backend test
 
       - name: Build Production Docker Image
