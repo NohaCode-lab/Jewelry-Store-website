@@ -29,6 +29,7 @@
     "express-rate-limit": "^8.6.1",
     "helmet": "^7.1.0",
     "ioredis": "^6.0.0",
+    "jewelry-store-platform": "file:..",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "pino": "^10.3.1",
