@@ -42,7 +42,7 @@ jobs:
         run: docker build -t mangatagallo-app:latest .
 
       - name: Run Trivy Security Vulnerability Scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: 'mangatagallo-app:latest'
           format: 'table'
