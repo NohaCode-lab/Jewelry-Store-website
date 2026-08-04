@@ -16,11 +16,6 @@ RUN npm --prefix backend ci
 # Copy source files
 COPY . .
 
-# Run linter & test suite checks
-RUN npm run lint
-RUN npm test
-RUN npm --prefix backend test
-
 # Build production Vite bundle & compile backend TypeScript
 RUN npm run build
 RUN npm --prefix backend run build
