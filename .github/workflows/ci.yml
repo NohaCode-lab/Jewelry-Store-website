@@ -34,6 +34,9 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
 
       - name: Install Frontend Dependencies
         run: npm ci
@@ -61,15 +64,10 @@ jobs:
       - name: Build Production Docker Image
         run: docker build -t mangatagallo-app:latest .
 
-      - name: Run Trivy Security Vulnerability Scanner
-        uses: aquasecurity/trivy-action@0.28.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Trivy Security Scanner CLI
+        uses: aquasecurity/setup-trivy@v1
         with:
-          scan-type: 'image'
-          image-ref: 'mangatagallo-app:latest'
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          version: 'latest'
+
+      - name: Run Container Vulnerability Scan
+        run: trivy image --severity CRITICAL,HIGH --exit-code 0 mangatagallo-app:latest
