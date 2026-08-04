@@ -52,11 +52,14 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/api/v1/auth/', authRateLimiter);
 }
 
+import orderRoutes from './routes/orderRoutes';
+
 // Enterprise Versioned API Routes (/api/v1/)
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/gdpr', authRoutes);
 
@@ -65,6 +68,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Centralized Error Handler
 app.use(errorHandler);
