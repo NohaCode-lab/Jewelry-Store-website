@@ -13,6 +13,7 @@ jobs:
   quality-and-security:
     name: Quality Gate, Security Scanning & Docker Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       redis:
