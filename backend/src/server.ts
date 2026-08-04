@@ -55,10 +55,17 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/api/v1/auth/', authRateLimiter);
 }
 
+import metricsRoutes from './routes/metricsRoutes';
 import orderRoutes from './routes/orderRoutes';
+import { initSentry } from './config/sentry';
+import { initOpenTelemetry } from './config/tracing';
+
+initSentry(app);
+initOpenTelemetry();
 
 // Enterprise Versioned API Routes (/api/v1/)
 app.use('/api/v1/health', healthRoutes);
+app.use('/api/v1/metrics', metricsRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
@@ -68,6 +75,7 @@ app.use('/api/v1/gdpr', authRoutes);
 
 // Legacy API Aliases for Backward Compatibility
 app.use('/api/health', healthRoutes);
+app.use('/api/metrics', metricsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
