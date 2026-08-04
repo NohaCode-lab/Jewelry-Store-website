@@ -74,8 +74,8 @@ jobs:
       - name: "Run Backend API Integration Tests"
         env:
           NODE_ENV: test
-          REDIS_URL: redis://localhost:6379
-          REDIS_HOST: localhost
+          REDIS_URL: redis://127.0.0.1:6379
+          REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
         run: npm --prefix backend test --if-present
 
