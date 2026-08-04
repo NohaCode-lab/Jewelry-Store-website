@@ -26,7 +26,7 @@ RUN npm run build
 RUN npm --prefix backend run build
 
 # -------------------------------------------------------------
-# Stage 2: Production Execution Runtime
+# Stage 2: Production Execution Runtime (Non-Root User Hardened)
 # -------------------------------------------------------------
 FROM node:20-alpine AS runner
 
@@ -46,9 +46,15 @@ RUN npm --prefix backend ci --omit=dev
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/dist ./public
 
+# Set non-root permissions for secure container execution
+RUN chown -R node:node /app
+
+# Enforce Non-Root User Execution
+USER node
+
 EXPOSE 5000
 
-# Health check
+# Container Health check probe
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1
 

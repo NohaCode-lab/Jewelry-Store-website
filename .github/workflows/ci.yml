@@ -1,4 +1,4 @@
-name: Mangata & Gallo Production CI/CD Pipeline
+name: Mangata & Gallo Production CI/CD & Security Pipeline
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [ main, upgrade/production-v2 ]
 
 jobs:
-  quality-gate:
+  quality-and-security:
+    name: Quality Gate, Security Scanning & Docker Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Codebase
@@ -25,7 +26,7 @@ jobs:
       - name: Run ESLint Linter
         run: npm run lint
 
-      - name: Run Vitest Unit Tests & Coverage
+      - name: Run Vitest Unit Tests
         run: npm test
 
       - name: Build Production Bundle (TypeScript + Vite)
@@ -36,3 +37,16 @@ jobs:
 
       - name: Run Backend API Integration Tests
         run: npm --prefix backend test
+
+      - name: Build Production Docker Image
+        run: docker build -t mangatagallo-app:latest .
+
+      - name: Run Trivy Security Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'mangatagallo-app:latest'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
