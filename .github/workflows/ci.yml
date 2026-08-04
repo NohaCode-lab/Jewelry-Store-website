@@ -61,6 +61,7 @@ jobs:
       - name: Run Trivy Security Vulnerability Scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
+          scan-type: 'image'
           image-ref: 'mangatagallo-app:latest'
           format: 'table'
           exit-code: '0'
