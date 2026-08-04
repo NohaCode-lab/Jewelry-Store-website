@@ -44,7 +44,7 @@ jobs:
       - name: "Setup Node"
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
           cache-dependency-path: |
             package-lock.json
@@ -67,6 +67,9 @@ jobs:
 
       - name: "Install Backend Dependencies"
         run: npm --prefix backend ci
+
+      - name: "Generate Prisma Client"
+        run: npm --prefix backend run prisma:generate --if-present
 
       - name: "Run Backend API Integration Tests"
         env:
