@@ -12,8 +12,9 @@ export const initSentry = (app: Application) => {
       tracesSampleRate: 1.0,
     });
 
-    app.use(Sentry.Handlers.requestHandler() as any);
-    app.use(Sentry.Handlers.tracingHandler() as any);
+    if (typeof (Sentry as any).setupExpressErrorHandler === 'function') {
+      (Sentry as any).setupExpressErrorHandler(app);
+    }
 
     console.log('✅ Sentry Exception & Error Monitoring initialized');
   } else {
