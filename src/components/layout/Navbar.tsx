@@ -53,23 +53,42 @@ export const Navbar: React.FC = () => {
     };
   }, [isOpen]);
 
-  const handleNavClick = (link: NavLinkItem) => {
-    if (location.pathname === '/') {
-      navigate(`/${link.hash}`);
-      const sectionId = link.hash.replace('#', '');
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+  const safeScrollTo = (yPos: number) => {
+    if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+      try {
+        window.scrollTo({ top: yPos, behavior: 'smooth' });
+      } catch (err) {
+        // Fallback for test environments without smooth scroll
+        window.scrollTo(0, yPos);
       }
-    } else {
+    }
+  };
+
+  const handleNavClick = (link: NavLinkItem) => {
+    setIsOpen(false);
+    const targetId = link.hash.replace('#', '');
+    const element =
+      document.getElementById(targetId) ||
+      document.querySelector(`[data-section="${targetId}"]`);
+
+    if (location.pathname === '/' && element) {
+      navigate(`/${link.hash}`);
+      const navHeight = 80;
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      safeScrollTo(elementPosition - navHeight);
+    } else if (location.pathname === '/') {
       navigate(link.path);
+      safeScrollTo(0);
+    } else {
+      navigate(`/${link.hash}`);
     }
   };
 
   const handleLogoClick = () => {
+    setIsOpen(false);
     if (location.pathname === '/') {
       navigate('/');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      safeScrollTo(0);
     } else {
       navigate('/');
     }
@@ -206,10 +225,7 @@ export const Navbar: React.FC = () => {
                   return (
                     <li key={link.id} className="w-full text-center">
                       <button
-                        onClick={() => {
-                          handleNavClick(link);
-                          setIsOpen(false);
-                        }}
+                        onClick={() => handleNavClick(link)}
                         className={`w-full py-2 text-xs tracking-widest uppercase hover:text-amber-400 hover:bg-white/5 rounded-lg transition font-medium ${
                           isActive ? 'text-amber-400 font-bold bg-white/5' : 'text-white/90'
                         }`}
