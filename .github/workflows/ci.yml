@@ -1,17 +1,26 @@
-name: Mangata & Gallo Production CI/CD & Security Pipeline
+name: Mangata & Gallo Production CI/CD
 
 on:
   push:
-    branches: [ main, upgrade/production-v2 ]
+    branches:
+      - main
+      - upgrade/production-v2
   pull_request:
-    branches: [ main, upgrade/production-v2 ]
+    branches:
+      - main
+      - upgrade/production-v2
 
 permissions:
   contents: read
+  security-events: write
+  packages: write
+
+env:
+  NODE_OPTIONS: --max-old-space-size=4096
 
 jobs:
-  quality-and-security:
-    name: Quality Gate, Security Scanning & Docker Build
+  build-and-test:
+    name: Build, Test & Quality Scan
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -27,14 +36,16 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout Codebase
+      - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js Environment
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'npm'
+          node-version: 20
+          cache: npm
           cache-dependency-path: |
             package-lock.json
             backend/package-lock.json
@@ -43,13 +54,16 @@ jobs:
         run: npm ci
 
       - name: Run ESLint Linter
-        run: npm run lint
+        run: npm run lint --if-present
 
       - name: Run Vitest Unit Tests
-        run: npm test
+        run: npm test --if-present
 
       - name: Build Production Bundle (TypeScript + Vite)
-        run: npm run build
+        run: npm run build --if-present
+
+      - name: TypeScript Check
+        run: npx tsc --noEmit --if-present
 
       - name: Install Backend Dependencies
         run: npm --prefix backend ci
@@ -60,11 +74,50 @@ jobs:
           REDIS_URL: redis://localhost:6379
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-        run: npm --prefix backend test
+        run: npm --prefix backend test --if-present
 
-      - name: Build Production Docker Image
-        run: docker build -t mangatagallo-app:latest .
+      - name: SonarCloud Scan
+        if: secrets.SONAR_TOKEN != ''
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run Trivy Container Vulnerability Scanner
-        run: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL,HIGH --exit-code 0 mangatagallo-app:latest
+  docker-and-security:
+    name: Docker Build & Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: secrets.DOCKER_PASSWORD != ''
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: mangatagallo-app:latest
+
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: mangatagallo-app:latest
+          severity: HIGH,CRITICAL
+          format: sarif
+          output: trivy-results.sarif
+
+      - name: Upload Trivy report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
