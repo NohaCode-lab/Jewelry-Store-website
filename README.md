@@ -2,17 +2,34 @@
 
 [![CI/CD Pipeline](https://github.com/NohaCode-lab/Jewelry-Store-website/actions/workflows/ci.yml/badge.svg)](https://github.com/NohaCode-lab/Jewelry-Store-website/actions)
 [![Node.js Version](https://img.shields.io/badge/Node.js-22.x-green.svg)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.2-purple.svg)](https://vitejs.dev/)
+[![React Version](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5.2-blue.svg)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.2.0-purple.svg)](https://vitejs.dev/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.16.0-2D3748.svg)](https://www.prisma.io/)
+[![Vitest](https://img.shields.io/badge/Vitest-1.6.0-yellow.svg)](https://vitest.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 [![Security Scan](https://img.shields.io/badge/Trivy-Vulnerability%20Scan-brightgreen.svg)](https://github.com/aquasecurity/trivy)
 [![Code Quality](https://img.shields.io/badge/SonarCloud-Clean%20Architecture-orange.svg)](https://sonarcloud.io/)
+[![Release](https://img.shields.io/badge/Release-v2.1.0-blueviolet.svg)](https://github.com/NohaCode-lab/Jewelry-Store-website/releases)
 
 A production-ready, full-stack luxury jewelry e-commerce platform built with modern frontend, backend microservices, database ORM, distributed queue processing, automated testing, containerization, and a hardened CI/CD pipeline.
 
 ---
 
-## 🌟 1. Project Overview & Capabilities
+## 📸 1. Visual Application & Pipeline Preview
+
+### GitHub Actions Production CI/CD Pipeline
+![GitHub Actions Pipeline Status](docs/images/github-actions-pipeline.png)
+
+### Production Workflow Execution & Verification
+![CI/CD Workflow Execution Status](docs/images/pipeline-execution-status.png)
+
+### Frontend Application Interface
+![Mangata & Gallo User Interface](docs/images/application-interface.png)
+
+---
+
+## 🌟 2. Project Overview & Capabilities
 
 **Mangata & Gallo** is designed to demonstrate modern software engineering practices, security hardening, and infrastructure automation. The application separates concerns cleanly between a client-side single-page application (SPA) and an Express backend API service.
 
@@ -20,50 +37,53 @@ A production-ready, full-stack luxury jewelry e-commerce platform built with mod
 - **Full-Stack Architecture:** Decoupled React frontend and Node.js backend microservice architecture.
 - **Secure API Design:** Controller-Service pattern, Zod runtime schema validation, JWT authentication, and Helmet HTTP security header hardening.
 - **Automated Testing:** 40 passing Vitest unit and API integration tests enforcing 100% test pass gates in CI.
-- **Docker Containerization:** Hardened multi-stage Docker build utilizing non-root execution and health probes.
+- **Docker Containerization:** Hardened multi-stage Docker build utilizing non-root execution (`USER node`) and health probes.
 - **Production CI/CD Pipeline:** Uncompromised GitHub Actions pipeline featuring decoupled job isolation, PostgreSQL/Redis service containers, Trivy vulnerability scanning, and SonarCloud static analysis.
 
 ---
 
-## 🚀 2. Project Highlights & Core Features
+## 🚀 3. Project Highlights & Core Features
 
-### 🎨 Frontend Application
-- **Vite 5 + React 18:** Fast HMR development and optimized production bundling.
-- **TypeScript:** Strict type checking (`npx tsc --noEmit`) across UI components and state stores.
+### 🎨 Frontend Application (`src/`)
+- **Vite 5.2.0 + React 18.3.1:** Fast HMR development and optimized production bundling.
+- **TypeScript 5.5.2:** Strict type checking (`npx tsc --noEmit`) across UI components and state stores.
 - **Responsive Luxury Styling:** Custom CSS design system with glassmorphic cards, micro-animations, and mobile responsiveness.
 - **Reactive State Management:** Zustand store for cart synchronization, local storage persistence, and authentication state.
 
-### ⚙️ Backend Services
-- **Node.js & Express RESTful API:** Modular `/api/v1/` routes for product catalog, shopping cart, authentication, and telemetry.
+### ⚙️ Backend Services (`backend/`)
+- **Node.js 22 + Express 4.19.2 RESTful API:** Modular `/api/v1/` routes for product catalog, shopping cart, authentication, and telemetry.
 - **OpenAPI / Swagger 3.0 Documentation:** Interactive API documentation rendered live at `http://localhost:5000/api/docs`.
 - **Validation & Exception Handling:** Strict Zod schema parsing on incoming payloads with centralized error middleware.
 
 ### 🗄️ Database & Persistence Layer
 - **PostgreSQL 16:** Relational database management system with ACID guarantees.
-- **Prisma ORM 5:** Schema migration management, type-safe query building, and seed data execution.
+- **Prisma ORM 5.16.0:** Schema migration management, type-safe query building, and seed data execution.
 
 ### ⚡ Async Background Processing
 - **Redis 7:** High-speed in-memory data store for query caching and distributed rate limiting.
-- **BullMQ Integration:** Asynchronous job queues for processing order checkouts and background notifications.
+- **BullMQ 6.0.6 Integration:** Asynchronous job queues for processing order checkouts and background notifications.
 
 ---
 
-## 🛠️ 3. Technology Stack
+## 🛠️ 4. Technology Stack Version Matrix
 
-| Category | Technologies | Description |
-| :--- | :--- | :--- |
-| **Frontend** | React 18, Vite 5, TypeScript 5, Tailwind CSS | Single Page Application UI with modular components |
-| **Backend** | Node.js 22, Express 4, Zod, Pino | Enterprise RESTful API microservice |
-| **Database** | PostgreSQL 16, Prisma ORM 5 | Relational data persistence & schema management |
-| **Caching & Queues** | Redis 7, BullMQ 6 | Query result caching & background job processing |
-| **Testing** | Vitest 1.6, Supertest 7 | Automated unit & database-backed integration tests |
-| **Containerization** | Docker, Docker Compose | Multi-stage image build & multi-service orchestration |
-| **CI/CD** | GitHub Actions | Decoupled 5-job pipeline architecture |
-| **Security & Quality** | Trivy 0.28, SonarCloud, Actionlint | Vulnerability scanning, SARIF reporting & code quality |
+| Category | Technology | Version | Purpose & Implementation |
+| :--- | :--- | :--- | :--- |
+| **Frontend Framework** | React | `18.3.1` | Single Page Application UI component architecture |
+| **Build Tooling** | Vite | `5.2.0` | Fast dev server and Rollup production bundling |
+| **Language** | TypeScript | `5.5.2` | Strict static type verification (`tsc --noEmit`) |
+| **Backend Framework** | Express | `4.19.2` | RESTful API microservice routing & middleware |
+| **Runtime Environment** | Node.js | `22.x LTS` | JavaScript runtime environment across server & CI |
+| **Database & ORM** | PostgreSQL & Prisma | `16` / `5.16.0` | Relational database & type-safe ORM persistence |
+| **Caching & Queues** | Redis & BullMQ | `7` / `6.0.6` | In-memory query caching & background job queues |
+| **Testing Suite** | Vitest & Supertest | `1.6.0` / `7.0.0` | Unit testing & database-backed HTTP API integration tests |
+| **Containerization** | Docker | `24.x+` | Multi-stage image build & container isolation |
+| **CI/CD Automation** | GitHub Actions | `v4` | 5-Job decoupled workflow pipeline |
+| **Security Scanning** | Trivy & SonarCloud | `0.28.0` | Container vulnerability & static code quality analysis |
 
 ---
 
-## 🏛️ 4. Application Architecture
+## 🏛️ 5. Application Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
@@ -92,9 +112,9 @@ A production-ready, full-stack luxury jewelry e-commerce platform built with mod
 
 ---
 
-## 🔄 5. Production CI/CD Pipeline
+## 🔄 6. Production CI/CD Pipeline
 
-The repository enforces an uncompromised 5-Job Production Pipeline in `.github/workflows/ci.yml`.
+The repository enforces an uncompromised 5-Job Pipeline in `.github/workflows/ci.yml`.
 
 ### Pipeline Execution Flow
 
@@ -123,8 +143,8 @@ The repository enforces an uncompromised 5-Job Production Pipeline in `.github/w
                                         │
                                         ▼
              ┌─────────────────────────────────────────────────┐
-             │       Job 5: Production Deployment Gate        │
-             │     Environment Protection Gate (main branch)   │
+             │  Job 5: Production Deployment Readiness Gate    │
+             │     Release Validation Gate (main branch)       │
              └─────────────────────────────────────────────────┘
 ```
 
@@ -137,7 +157,7 @@ The repository enforces an uncompromised 5-Job Production Pipeline in `.github/w
 
 ---
 
-## 🧪 6. Testing Strategy
+## 🧪 7. Testing Strategy
 
 Automated test suites are integrated into every pull request and push.
 
@@ -147,14 +167,14 @@ Backend API Tests:    21 passed (100%)
 Total Test Coverage:  40 passing tests
 ```
 
-### Frontend Testing (`Vitest`)
+### Frontend Testing (`Vitest 1.6.0`)
 - Validates React UI components, Zustand cart state mutations, client-side search logic, and utility functions.
 - Run locally:
   ```bash
   npm test
   ```
 
-### Backend Testing (`Vitest` + `Supertest` + `PostgreSQL` + `Redis`)
+### Backend Testing (`Vitest 1.6.0` + `Supertest 7.0.0` + `PostgreSQL 16` + `Redis 7`)
 - Performs real HTTP API integration tests against a live PostgreSQL database and Redis queue instance.
 - Tests authentication flows (`POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`), cart operations, product catalog endpoints, and Prometheus metrics telemetry.
 - Enforces sequential test file execution (`--fileParallelism=false`) to eliminate database transaction collisions.
@@ -165,7 +185,7 @@ Total Test Coverage:  40 passing tests
 
 ---
 
-## 🐳 7. Docker & Production Readiness
+## 🐳 8. Docker & Container Security
 
 The application uses a multi-stage `Dockerfile` based on `node:22-alpine` to minimize image size and harden production runtime security.
 
@@ -202,7 +222,7 @@ CMD ["node", "backend/dist/server.js"]
 
 ---
 
-## 🛡️ 8. Security & Code Quality Practices
+## 🛡️ 9. Security & Code Quality Practices
 
 1. **Trivy Vulnerability Scanning:** Automated scanning of container images for `HIGH` and `CRITICAL` CVEs via `aquasecurity/trivy-action@0.28.0`.
 2. **SARIF Code Scanning:** Results uploaded directly to GitHub Security tab via `github/codeql-action/upload-sarif@v3`.
@@ -218,11 +238,11 @@ CMD ["node", "backend/dist/server.js"]
 
 ---
 
-## 💻 9. Local Development Setup
+## 💻 10. Local Development Setup
 
 ### Prerequisites
-- **Node.js**: `v22.x` or higher
-- **npm**: `v10.x` or higher
+- **Node.js**: `v22.x`
+- **npm**: `v10.x`
 - **PostgreSQL**: `v16.x` (or via Docker)
 - **Redis**: `v7.x` (or via Docker)
 
@@ -278,7 +298,7 @@ CMD ["node", "backend/dist/server.js"]
 
 ---
 
-## 🔑 10. Environment Variables
+## 🔑 11. Environment Variables
 
 | Variable | Required | Default / Example | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -293,7 +313,7 @@ CMD ["node", "backend/dist/server.js"]
 
 ---
 
-## 📁 11. Project Structure
+## 📁 12. Project Structure
 
 ```text
 Jewelry-Store-website/
@@ -316,6 +336,8 @@ Jewelry-Store-website/
 │   ├── tests/                       # API integration test suite
 │   ├── package.json                 # Backend dependencies & scripts
 │   └── tsconfig.json                # Backend TypeScript configuration
+├── docs/
+│   └── images/                      # Pipeline & architecture screenshots
 ├── src/                             # React Frontend application
 │   ├── components/                  # UI components
 │   ├── context/                     # Auth & state contexts
@@ -331,7 +353,7 @@ Jewelry-Store-website/
 
 ---
 
-## 💡 12. Engineering Decisions & Architecture Trade-Offs
+## 💡 13. Engineering Decisions & Architecture Trade-Offs
 
 ### 1. Independent Subfolder Dependencies vs Root Monorepo Hoisting
 - **Decision:** Backend maintains its own `package.json` and `node_modules/`.
@@ -351,16 +373,28 @@ Jewelry-Store-website/
 
 ---
 
-## 🔮 13. Future Roadmap
+## 📦 14. Release Notes (`v2.1.0`)
 
-- [ ] **Automated CD Deployment:** Implement automated deployment triggers to AWS ECS / Render staging environments upon `main` merge.
+### `v2.1.0` - Production Ready Release Architecture
+
+- **Hardened CI/CD Security Pipeline:** Implemented 5-Job workflow featuring PostgreSQL 16 and Redis 7 service containers, Trivy container security scanning with SARIF report upload, and SonarCloud analysis.
+- **Runtime Standard:** Upgraded to Node.js 22 LTS across runners, local environment, and multi-stage Docker build.
+- **Backend Service Resilience:** Configured BullMQ `maxRetriesPerRequest: null` connection options and added queue error event listeners to handle socket retries cleanly.
+- **Database Initialization Automation:** Integrated dynamic `prisma db push` and `prisma seed` execution inside integration testing pipelines.
+- **Comprehensive Test Coverage:** 40/40 passing unit and integration test assertions across frontend and backend.
+
+---
+
+## 🔮 15. Future Roadmap
+
+- [ ] **Automated Deployment Gate:** Implement automated CD deployment triggers to AWS ECS / Cloud Run environments upon release tags.
 - [ ] **E2E Playwright Integration:** Add browser-based end-to-end user checkout flow validation.
 - [ ] **Telemetry Dashboard:** Integrate Grafana dashboards to visualize Prometheus metrics collected at `/api/v1/metrics`.
 - [ ] **Extended Vector Database:** Upgrade in-memory RAG search to native `pgvector` extension bindings on PostgreSQL.
 
 ---
 
-## 📜 14. License & Contact
+## 📜 16. License & Contact
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
