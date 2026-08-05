@@ -44,19 +44,19 @@ jobs:
         run: npm ci
 
       - name: "Run ESLint Linter"
-        run: npm run lint --if-present
+        run: npm run lint
 
       - name: "TypeScript Strict Type Check"
-        run: npx tsc --noEmit --if-present
+        run: npx tsc --noEmit
 
       - name: "Run Vitest Frontend Unit Tests"
-        run: npm test --if-present
+        run: npm test
 
       - name: "Build Production Bundle (Vite)"
-        run: npm run build --if-present
+        run: npm run build
 
   # ===========================================================================
-  # JOB 2: Backend Integration & API Test Suite (Redis Service Gated)
+  # JOB 2: Backend Integration & API Test Suite (Postgres & Redis Services)
   # ===========================================================================
   backend-integration-tests:
     name: "2. Backend Integration & Service Tests"
@@ -64,6 +64,19 @@ jobs:
     timeout-minutes: 12
 
     services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: mangatagallo_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test_password_2026
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U postgres -d mangatagallo_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
       redis:
         image: redis:7-alpine
         ports:
@@ -93,10 +106,17 @@ jobs:
         working-directory: ./backend
         run: npm run prisma:generate
 
+      - name: "Push Database Schema to Test Postgres"
+        working-directory: ./backend
+        env:
+          DATABASE_URL: "postgresql://postgres:test_password_2026@127.0.0.1:5432/mangatagallo_test?schema=public"
+        run: npx prisma db push
+
       - name: "Run Backend API Integration Tests"
         working-directory: ./backend
         env:
           NODE_ENV: test
+          DATABASE_URL: "postgresql://postgres:test_password_2026@127.0.0.1:5432/mangatagallo_test?schema=public"
           REDIS_URL: redis://127.0.0.1:6379
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
@@ -126,7 +146,7 @@ jobs:
   # ===========================================================================
   # JOB 4: Docker Container Build & Trivy Security Vulnerability Scan
   # ===========================================================================
-  docker-build-and-security:
+  docker-and-security:
     name: "4. Docker Build & Security Vulnerability Scan"
     runs-on: ubuntu-latest
     needs: [lint-and-unit-test, backend-integration-tests]
@@ -179,7 +199,7 @@ jobs:
   deploy-production:
     name: "5. Production Deployment Gate"
     runs-on: ubuntu-latest
-    needs: [lint-and-unit-test, backend-integration-tests, docker-build-and-security]
+    needs: [lint-and-unit-test, backend-integration-tests, docker-and-security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
     steps:
