@@ -120,7 +120,7 @@ jobs:
           REDIS_URL: redis://127.0.0.1:6379
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
-        run: npm test
+        run: npx vitest run
 
   # ===========================================================================
   # JOB 3: SonarCloud Code Quality & Vulnerability Analysis
