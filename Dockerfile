@@ -1,56 +1,73 @@
+# =============================================================
+# Multi-Stage Production Dockerfile for Mangata & Gallo
+# =============================================================
+
 # -------------------------------------------------------------
-# Stage 1: Build Frontend Bundle & Compile Backend TypeScript
+# Stage 1: Build & Compilation (Node.js 22 Alpine)
 # -------------------------------------------------------------
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copy root dependency manifests
+# Install build tools if native compilation is required
+RUN apk add --no-base python3 make g++
+
+# Copy root dependency manifests & install deterministically
 COPY package*.json ./
 RUN npm ci
 
-# Copy backend dependency manifests
+# Copy backend dependency manifests & install deterministically
 COPY backend/package*.json ./backend/
 RUN npm --prefix backend ci
 
-# Copy source files
+# Copy full application codebase
 COPY . .
 
-# Build production Vite bundle & compile backend TypeScript
+# Generate Prisma Client for backend database layer
+RUN npm --prefix backend run prisma:generate
+
+# Build production Vite bundle for frontend & compile backend TypeScript
 RUN npm run build
 RUN npm --prefix backend run build
 
 # -------------------------------------------------------------
-# Stage 2: Production Execution Runtime (Non-Root User Hardened)
+# Stage 2: Hardened Non-Root Production Runtime
 # -------------------------------------------------------------
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=5000
 
+# Install minimal runtime dependencies (wget for healthcheck)
+RUN apk add --no-cache wget
+
 # Copy root and backend package definitions
 COPY package*.json ./
 COPY backend/package*.json ./backend/
 
-# Install production dependencies only
+# Install production-only dependencies
 RUN npm --prefix backend ci --omit=dev
 
-# Copy compiled backend output & static frontend assets
+# Copy generated Prisma client from builder stage
+COPY --from=builder /app/backend/node_modules/@prisma ./backend/node_modules/@prisma
+COPY --from=builder /app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+
+# Copy compiled backend dist & static frontend assets
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/dist ./public
 
-# Set non-root permissions for secure container execution
+# Set strict non-root ownership permissions
 RUN chown -R node:node /app
 
-# Enforce Non-Root User Execution
+# Enforce Non-Root User Execution (PoLP)
 USER node
 
 EXPOSE 5000
 
-# Container Health check probe
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1
+# Production Health Check Probe
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/v1/health || exit 1
 
 CMD ["node", "backend/dist/server.js"]
