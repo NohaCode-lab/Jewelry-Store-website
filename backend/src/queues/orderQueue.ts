@@ -20,4 +20,8 @@ export const orderProcessingQueue = new Queue('order-processing-queue', {
   },
 });
 
+orderProcessingQueue.on('error', (err) => {
+  logger.warn(`BullMQ orderProcessingQueue connection notice: ${err.message}`);
+});
+
 logger.info('BullMQ orderProcessingQueue initialized');
