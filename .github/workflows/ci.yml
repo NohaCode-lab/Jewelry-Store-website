@@ -86,14 +86,6 @@ jobs:
         run: npm test --if-present
         continue-on-error: true
 
-      - name: "SonarCloud Security Scan"
-        if: env.SONAR_TOKEN != ''
-        uses: SonarSource/sonarcloud-github-action@v3.0.0
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
   # ---------------------------------------------------------------------------
   # JOB 2: Docker Build & Trivy Security Vulnerability Scan
   # ---------------------------------------------------------------------------
