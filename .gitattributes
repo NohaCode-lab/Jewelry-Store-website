@@ -1,0 +1,9 @@
+# GitHub Linguist Language & Attribute Configuration for Jewelry-Store-website
+docs/* linguist-documentation
+*.jpg linguist-documentation
+*.webp linguist-documentation
+*.png linguist-documentation
+dist/* linguist-vendored
+backend/dist/* linguist-vendored
+package-lock.json linguist-vendored
+backend/package-lock.json linguist-vendored
