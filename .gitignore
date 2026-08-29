@@ -17,9 +17,11 @@ coverage/
 
 # Environment and Secrets
 .env
-.env*.local
+.env*
+!.env.example
 backend/.env
-backend/.env*.local
+backend/.env*
+!backend/.env.example
 *.local
 
 # Editor directories and files
