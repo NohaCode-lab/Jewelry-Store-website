@@ -16,6 +16,15 @@ A production-ready, full-stack luxury jewelry e-commerce platform built with mod
 
 ---
 
+## 🔗 Project Links
+
+* **Live Demo (Frontend):** `https://mangatagallo-store.vercel.app` *(Placeholder — to be updated upon live Vercel deploy)*
+* **API Gateway (Backend):** `https://mangatagallo-backend.onrender.com` *(Placeholder — to be updated upon live Render deploy)*
+* **GitHub Repository:** `https://github.com/NohaCode-lab/Jewelry-Store-website`
+* **Deployment Architecture:** [Production Deployment Architecture](#-production-deployment)
+
+---
+
 ## 📸 1. Visual Application & Pipeline Preview
 
 ### GitHub Actions Production CI/CD Pipeline
@@ -391,6 +400,71 @@ Jewelry-Store-website/
 - [ ] **E2E Playwright Integration:** Add browser-based end-to-end user checkout flow validation.
 - [ ] **Telemetry Dashboard:** Integrate Grafana dashboards to visualize Prometheus metrics collected at `/api/v1/metrics`.
 - [ ] **Extended Vector Database:** Upgrade in-memory RAG search to native `pgvector` extension bindings on PostgreSQL.
+
+---
+
+# 🚀 Production Deployment
+
+## Architecture Overview
+
+```text
+                           MANGATA & GALLO PRODUCTION TOPOLOGY
+                                            │
+    ┌───────────────────────────────────────┼───────────────────────────────────────┐
+    ▼                                       ▼                                       ▼
+[ Vercel Edge Global CDN ]          [ Render Web Service ]                  [ Supabase / Cloud Postgres ]
+React 18 + Vite 5 Frontend          Node.js Express API (Port 5000)         Managed PostgreSQL Database
+(https://mangatagallo-store.vercel.app) (https://mangatagallo-backend.onrender.com) (https://supabase.com)
+ ├── Vite SPA Bundle (dist/)         ├── Express REST Endpoints              ├── Luxury Catalog Products
+ ├── vercel.json SPA Rewrites        ├── Prisma ORM Client                   ├── Customer Orders & Users
+ ├── Zustand Persistent Cart Store   ├── Server-Side Secret Protection       └── Transaction Ledgers
+ └── WebP Optimized Image Assets     └── Zod Request Validation
+```
+
+## Live Application
+
+* **Frontend:** `https://mangatagallo-store.vercel.app` *(Placeholder — to be updated upon live Vercel deploy)*
+* **Backend API:** `https://mangatagallo-backend.onrender.com` *(Placeholder — to be updated upon live Render deploy)*
+* **Database:** [Supabase Managed PostgreSQL](https://supabase.com) *(Cloud-managed, credentials isolated)*
+
+---
+
+## 🛠️ Step-by-Step Deployment Instructions
+
+### 1. Database — Supabase
+1. Create a project on [Supabase](https://supabase.com).
+2. Copy the **Connection URI (Pooler)** from **Project Settings → Database**.
+3. Apply Prisma migrations and seed products:
+   ```bash
+   cd backend
+   npx prisma db push
+   npx ts-node prisma/seed.ts
+   ```
+
+### 2. Backend API — Render
+1. In [Render](https://render.com), click **New Web Service** and select this repository (or use [`render.yaml`](render.yaml)).
+2. Configure settings:
+   - **Root Directory:** `backend`
+   - **Build Command:** `npm install && npx prisma generate && npm run build`
+   - **Start Command:** `npm start`
+   - **Health Check Path:** `/health`
+3. Set Environment Variables in Render:
+   ```text
+   NODE_ENV     = production
+   PORT         = 5000
+   CORS_ORIGIN  = https://mangatagallo-store.vercel.app
+   DATABASE_URL = postgresql://user:password@aws-0-eu.pooler.supabase.com:6543/postgres
+   JWT_SECRET   = your_secure_jwt_secret_key_here
+   ```
+
+### 3. Frontend SPA — Vercel
+1. In [Vercel](https://vercel.com), click **Add New Project** and import `Jewelry-Store-website`.
+2. Framework is automatically detected as **Vite** (`dist`).
+3. Set Environment Variables in Vercel:
+   ```text
+   VITE_API_URL = https://mangatagallo-backend.onrender.com/api/v1
+   ```
+4. Click **Deploy**. The root [`vercel.json`](vercel.json) handles client-side routing.
 
 ---
 
