@@ -123,6 +123,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             >
               {loading ? 'Processing...' : mode === 'login' ? 'Sign In to Atelier' : 'Create Account'}
             </button>
+
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t border-neutral-800"></div>
+              <span className="flex-shrink mx-3 text-[10px] uppercase font-bold tracking-wider text-neutral-500">Or Explore</span>
+              <div className="flex-grow border-t border-neutral-800"></div>
+            </div>
+
+            <button
+              type="button"
+              onClick={async () => {
+                const { loginWithDemoVIP } = useAuth();
+                await loginWithDemoVIP();
+                toast.success('Welcome Lady Mariana Gallo (VIP Atelier Access)');
+                onClose();
+              }}
+              className="w-full py-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-medium rounded-lg text-xs transition flex items-center justify-center gap-2"
+            >
+              <Sparkles size={14} className="text-amber-400" />
+              <span>Explore VIP Atelier Demo Mode</span>
+            </button>
           </form>
 
           <div className="mt-6 text-center text-xs text-neutral-400">

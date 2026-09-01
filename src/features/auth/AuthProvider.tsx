@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, pass?: string) => Promise<void>;
+  loginWithDemoVIP: () => Promise<void>;
   signUp: (email: string, pass: string, fullName: string) => Promise<void>;
   logout: () => Promise<void>;
   isAdmin: boolean;
@@ -30,6 +31,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const usr = await authService.loginWithEmail(email, pass);
+      setUser(usr);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithDemoVIP = async () => {
+    setLoading(true);
+    try {
+      const usr = await authService.loginWithDemoVIP();
       setUser(usr);
     } finally {
       setLoading(false);
@@ -60,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     loading,
     login,
+    loginWithDemoVIP,
     signUp,
     logout,
     isAdmin: permissions.canAccessAdmin(user?.role),

@@ -12,14 +12,41 @@ export const authService = {
           id: session.user.id,
           email: session.user.email || '',
           fullName: session.user.user_metadata?.full_name || 'Mariana Gallo Client',
-          role: session.user.user_metadata?.role || 'vip',
+          role: session.user.user_metadata?.role || 'customer',
           createdAt: session.user.created_at,
         };
       }
     } catch (err) {
-      console.warn('Auth getSession fallback:', err);
+      console.warn('Auth getSession error:', err);
     }
 
+    return null;
+  },
+
+  async loginWithEmail(email: string, pass?: string): Promise<User> {
+    if (!pass) {
+      throw new Error('Password is required for authentication.');
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      throw error;
+    }
+
+    if (data?.user) {
+      return {
+        id: data.user.id,
+        email: data.user.email || email,
+        fullName: data.user.user_metadata?.full_name || email.split('@')[0],
+        role: data.user.user_metadata?.role || 'customer',
+        createdAt: data.user.created_at,
+      };
+    }
+
+    throw new Error('Authentication failed. Please check your credentials.');
+  },
+
+  async loginWithDemoVIP(): Promise<User> {
     return {
       id: 'usr-vip-001',
       email: 'vip.client@mangatagallo.com',
@@ -29,62 +56,27 @@ export const authService = {
     };
   },
 
-  async loginWithEmail(email: string, pass?: string): Promise<User> {
-    try {
-      if (pass) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-        if (error) throw error;
-        if (data.user) {
-          return {
-            id: data.user.id,
-            email: data.user.email || email,
-            fullName: data.user.user_metadata?.full_name || email.split('@')[0],
-            role: data.user.user_metadata?.role || 'customer',
-            createdAt: data.user.created_at,
-          };
-        }
-      }
-    } catch (err) {
-      console.warn('Auth login fallback:', err);
-    }
-
-    return {
-      id: 'usr-' + Math.random().toString(36).substring(2, 9),
-      email,
-      fullName: email.split('@')[0],
-      role: 'customer',
-      createdAt: new Date().toISOString(),
-    };
-  },
-
   async signUp(email: string, pass: string, fullName: string): Promise<User> {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password: pass,
-        options: { data: { full_name: fullName, role: 'customer' } },
-      });
-      if (error) throw error;
-      if (data.user) {
-        return {
-          id: data.user.id,
-          email: data.user.email || email,
-          fullName,
-          role: 'customer',
-          createdAt: data.user.created_at,
-        };
-      }
-    } catch (err) {
-      console.warn('Auth signUp fallback:', err);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { full_name: fullName, role: 'customer' } },
+    });
+    if (error) {
+      throw error;
     }
 
-    return {
-      id: 'usr-' + Math.random().toString(36).substring(2, 9),
-      email,
-      fullName,
-      role: 'customer',
-      createdAt: new Date().toISOString(),
-    };
+    if (data?.user) {
+      return {
+        id: data.user.id,
+        email: data.user.email || email,
+        fullName,
+        role: 'customer',
+        createdAt: data.user.created_at,
+      };
+    }
+
+    throw new Error('Sign up failed. Please try again.');
   },
 
   async logout(): Promise<void> {

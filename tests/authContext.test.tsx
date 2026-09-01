@@ -15,7 +15,7 @@ const TestComponent = () => {
 };
 
 describe('AuthProvider Context', () => {
-  it('provides default authenticated VIP session profile', async () => {
+  it('provides authentication context and supports login and logout', async () => {
     render(
       <AuthProvider>
         <TestComponent />
