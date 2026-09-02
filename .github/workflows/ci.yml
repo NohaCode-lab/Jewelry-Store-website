@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: "Setup Node.js 22"
         uses: actions/setup-node@v4
@@ -98,7 +98,7 @@ jobs:
     needs: [lint-and-unit-test, backend-validation-and-tests]
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: "Build Frontend & Backend Containers"
         run: |
