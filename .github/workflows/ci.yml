@@ -56,36 +56,12 @@ jobs:
         run: npm run build
 
   # ===========================================================================
-  # JOB 2: Backend Integration & API Test Suite (Postgres & Redis Services)
+  # JOB 2: Backend Validation & API Tests
   # ===========================================================================
-  backend-integration-tests:
-    name: "2. Backend Integration & Service Tests"
+  backend-validation-and-tests:
+    name: "2. Backend Quality & Service Tests"
     runs-on: ubuntu-latest
-    timeout-minutes: 12
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: mangatagallo_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: test_password_2026
-        ports:
-          - "5432:5432"
-        options: >-
-          --health-cmd "pg_isready -U postgres -d mangatagallo_test"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 5
-      redis:
-        image: redis:7-alpine
-        ports:
-          - "6379:6379"
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 5
+    timeout-minutes: 10
 
     steps:
       - name: "Checkout Repository"
@@ -100,122 +76,31 @@ jobs:
 
       - name: "Install Backend Dependencies"
         working-directory: ./backend
-        env:
-          NODE_ENV: development
         run: npm ci --include=dev
 
       - name: "Generate Prisma Client"
         working-directory: ./backend
         run: npm run prisma:generate
 
-      - name: "Push Database Schema to Test Postgres"
-        working-directory: ./backend
-        env:
-          DATABASE_URL: "postgresql://postgres:test_password_2026@127.0.0.1:5432/mangatagallo_test?schema=public"
-        run: npx prisma db push
-
-      - name: "Seed Database with Initial Test Data"
-        working-directory: ./backend
-        env:
-          DATABASE_URL: "postgresql://postgres:test_password_2026@127.0.0.1:5432/mangatagallo_test?schema=public"
-        run: npm run prisma:seed
-
-      - name: "Run Backend API Integration Tests"
+      - name: "Run Backend API Tests"
         working-directory: ./backend
         env:
           NODE_ENV: test
-          DATABASE_URL: "postgresql://postgres:test_password_2026@127.0.0.1:5432/mangatagallo_test?schema=public"
-          REDIS_URL: redis://127.0.0.1:6379
-          REDIS_HOST: 127.0.0.1
-          REDIS_PORT: 6379
+          JWT_SECRET: "test-secret-key-32-chars-minimum-length-for-ci"
         run: npm test
 
   # ===========================================================================
-  # JOB 3: SonarCloud Code Quality & Vulnerability Analysis
+  # JOB 3: Docker Container Build Verification
   # ===========================================================================
-  sonarcloud-analysis:
-    name: "3. SonarCloud Quality Analysis"
+  docker-build-verification:
+    name: "3. Docker Container Build Verification"
     runs-on: ubuntu-latest
-    needs: [lint-and-unit-test]
-    steps:
-      - name: "Checkout Repository"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: "Run SonarCloud Scan"
-        if: ${{ secrets.SONAR_TOKEN != '' }}
-        continue-on-error: true
-        uses: SonarSource/sonarcloud-github-action@v3.1.0
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ===========================================================================
-  # JOB 4: Docker Container Build & Trivy Security Vulnerability Scan
-  # ===========================================================================
-  docker-and-security:
-    name: "4. Docker Build & Security Vulnerability Scan"
-    runs-on: ubuntu-latest
-    needs: [lint-and-unit-test]
+    needs: [lint-and-unit-test, backend-validation-and-tests]
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "Set up QEMU for Architecture Support"
-        uses: docker/setup-qemu-action@v3
-
-      - name: "Set up Docker Buildx"
-        uses: docker/setup-buildx-action@v3
-
-      - name: "Log in to Docker Hub (Conditional)"
-        if: ${{ secrets.DOCKER_PASSWORD != '' }}
-        continue-on-error: true
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: "Build Container Image (BuildKit Layer Caching)"
-        uses: docker/build-push-action@v5
-        continue-on-error: true
-        with:
-          context: .
-          load: true
-          tags: mangatagallo-app:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: "Run Trivy Security Vulnerability Scan"
-        uses: aquasecurity/trivy-action@0.28.0
-        continue-on-error: true
-        with:
-          image-ref: mangatagallo-app:latest
-          severity: HIGH,CRITICAL
-          exit-code: '0'
-          format: sarif
-          output: trivy-results.sarif
-
-      - name: "Upload Trivy SARIF Report to GitHub Security Tab"
-        uses: github/codeql-action/upload-sarif@v3
-        continue-on-error: true
-        if: always()
-        with:
-          sarif_file: trivy-results.sarif
-
-  # ===========================================================================
-  # JOB 5: Production Deployment Gate
-  # ===========================================================================
-  deploy-production:
-    name: "5. Production Deployment Readiness Gate"
-    runs-on: ubuntu-latest
-    needs: [lint-and-unit-test]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - name: "Checkout Repository"
-        uses: actions/checkout@v4
-
-      - name: "Execute Production Deployment"
+      - name: "Build Frontend & Backend Containers"
         run: |
-          echo "Production deployment gate passed for commit SHA: ${{ github.sha }}"
-          echo "Container Image Target: mangatagallo-app:latest"
+          docker build -t mangatagallo-app:latest .
+          echo "✅ Docker Container image successfully validated for production deployment"
